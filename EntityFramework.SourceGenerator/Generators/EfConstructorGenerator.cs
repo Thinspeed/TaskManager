@@ -64,7 +64,7 @@ public class EfConstructorGenerator : IIncrementalGenerator
                                           {{SourceGenerationHelper.GetGeneratedCodeAttribute(nameof(EfConstructorGenerator), Version)}}
                                           partial class {{className}}
                                           {
-                                              private {{className}}()
+                                              protected {{className}}()
                                               {
                                               }
                                           }
