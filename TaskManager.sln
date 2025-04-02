@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFSelector", "EFSelector\EF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFramework.SourceGenerator", "EntityFramework.SourceGenerator\EntityFramework.SourceGenerator.csproj", "{23E0CD3A-C72E-4530-9B85-2B6113622D56}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager.Domain", "TaskManager.Domain\TaskManager.Domain.csproj", "{01516207-4985-4B9A-9A57-222EF4DB8009}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{23E0CD3A-C72E-4530-9B85-2B6113622D56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{23E0CD3A-C72E-4530-9B85-2B6113622D56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23E0CD3A-C72E-4530-9B85-2B6113622D56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01516207-4985-4B9A-9A57-222EF4DB8009}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01516207-4985-4B9A-9A57-222EF4DB8009}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01516207-4985-4B9A-9A57-222EF4DB8009}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01516207-4985-4B9A-9A57-222EF4DB8009}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
