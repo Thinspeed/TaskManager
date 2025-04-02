@@ -1,8 +1,28 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppDefinition", "AppDefinition\AppDefinition.csproj", "{29A7382C-1302-4A06-9A73-9C4EBEDB81FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFSelector", "EFSelector\EFSelector.csproj", "{6DDC12B5-13C9-4474-822F-92A16F46A8DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFramework.SourceGenerator", "EntityFramework.SourceGenerator\EntityFramework.SourceGenerator.csproj", "{23E0CD3A-C72E-4530-9B85-2B6113622D56}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{29A7382C-1302-4A06-9A73-9C4EBEDB81FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29A7382C-1302-4A06-9A73-9C4EBEDB81FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29A7382C-1302-4A06-9A73-9C4EBEDB81FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29A7382C-1302-4A06-9A73-9C4EBEDB81FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DDC12B5-13C9-4474-822F-92A16F46A8DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DDC12B5-13C9-4474-822F-92A16F46A8DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DDC12B5-13C9-4474-822F-92A16F46A8DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DDC12B5-13C9-4474-822F-92A16F46A8DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23E0CD3A-C72E-4530-9B85-2B6113622D56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23E0CD3A-C72E-4530-9B85-2B6113622D56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23E0CD3A-C72E-4530-9B85-2B6113622D56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23E0CD3A-C72E-4530-9B85-2B6113622D56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
