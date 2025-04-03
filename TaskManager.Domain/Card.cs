@@ -33,8 +33,6 @@ public partial class Card : Entity
     public Status Status => _status;
 
     public DateTime EstimatedCompletionDate { get; set; }
-    
-    public long? ActualProcessingTime { get; set; }
 
     public void StartProcessing()
     {
@@ -55,7 +53,6 @@ public partial class Card : Entity
         
         _status = Status.Completed;
         ClosingDate = DateTime.UtcNow;
-        ActualProcessingTime = ClosingDate.Value.Ticks - CreationDate.Ticks;
     }
 }
 
