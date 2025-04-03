@@ -9,13 +9,6 @@ namespace TaskManager.Api.Requests;
 public abstract class BaseRequestHandler<TRequest, TResponse> : IRequestHandler<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    protected readonly DbContext DbContext;
-
-    protected BaseRequestHandler(DbContext dbContext)
-    {
-        DbContext = dbContext;
-    }
-
     public abstract Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
 }
 
