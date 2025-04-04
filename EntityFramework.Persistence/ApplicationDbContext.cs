@@ -10,8 +10,9 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder
-            .ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly,
-                type => type is { IsClass: true, IsAbstract: false } && type.IsSubclassOf(typeof(EntityConfiguration<>)));
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly, type => 
+            type is { IsClass: true, IsAbstract: false } && 
+            type.BaseType is { IsGenericType: true } &&
+            type.BaseType.GetGenericTypeDefinition() == typeof(EntityConfiguration<>));
     }
 }
