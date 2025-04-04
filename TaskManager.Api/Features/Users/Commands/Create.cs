@@ -15,13 +15,13 @@ public record CreateUserCommandBody(
     string Name) : PostCommandBody;
 
 [UsedImplicitly]
-public class CreateUserCommand : PostCommand<CreateUserCommandBody, Unit>;
+public class CreateUserCommand : PostCommand<CreateUserCommandBody, int>;
 
 [UsedImplicitly]
 public class CreateUserCommandHandler(ApplicationDbContext dbContext, IPasswordHasher<User> hasher)
-    : BaseRequestHandler<CreateUserCommand, Unit>
+    : BaseRequestHandler<CreateUserCommand, int>
 {
-    public override async Task<Unit> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public override async Task<int> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         CreateUserCommandBody body = request.Body;
 
@@ -38,6 +38,6 @@ public class CreateUserCommandHandler(ApplicationDbContext dbContext, IPasswordH
 
         await dbContext.SaveChangesAsync(cancellationToken);
         
-        return Unit.Value;
+        return user.Id;
     }
 }
