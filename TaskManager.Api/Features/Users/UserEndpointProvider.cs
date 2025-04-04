@@ -26,8 +26,8 @@ public class UserEndpointProvider : IEndpointProvider
             });
         
         builder.MapGet(
-            "/user/{Id}",
-            async (IMediator mediator, [AsParameters] GetUserByIdQuery request) => Results.Ok(await mediator.Send(request)))
+                "/user/{Id}",
+                async (IMediator mediator, [AsParameters] GetUserByIdQuery request) => Results.Ok(await mediator.Send(request)))
             .RequireAuthorization();
     }
 }

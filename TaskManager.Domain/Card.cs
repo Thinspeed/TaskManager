@@ -34,11 +34,13 @@ public partial class Card : Entity
 
     public DateTime EstimatedCompletionDate { get; init; }
 
+    public long? ActualProcessingTime => ClosingDate is null ? null : ClosingDate.Value.Ticks - CreationDate.Ticks;
+    
     public void StartProcessing()
     {
         if (_status != Status.Created)
         {
-            throw new Exception("Task was already started or completed");
+            throw new Exception("Задача уже начата или завершена");
         }
         
         _status = Status.Processing;
@@ -48,7 +50,7 @@ public partial class Card : Entity
     {
         if (_status == Status.Completed)
         {
-            throw new Exception("Task was already completed");
+            throw new Exception("Задача уже завершена");
         }
         
         _status = Status.Completed;
