@@ -16,10 +16,18 @@ public class UserEndpointProvider : IEndpointProvider
 
         builder.MapPost(
             "/login",
-            async ([FromServices] IMediator mediator, [AsParameters] LoginCommand request) => Results.Ok(await mediator.Send(request)));
+            async ([FromServices] IMediator mediator, [AsParameters] LoginCommand request, HttpContext context) =>
+            {
+                string token = await mediator.Send(request);
+                
+                context.Response.Cookies.Append("am-cookies", token);
+
+                return Results.Ok();
+            });
         
         builder.MapGet(
             "/user/{Id}",
-            async (IMediator mediator, [AsParameters] GetUserByIdQuery request) => Results.Ok(await mediator.Send(request)));
+            async (IMediator mediator, [AsParameters] GetUserByIdQuery request) => Results.Ok(await mediator.Send(request)))
+            .RequireAuthorization();
     }
 }
