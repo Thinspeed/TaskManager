@@ -1,0 +1,15 @@
+﻿services:
+  taskmanager.api:
+    image: taskmanager.api
+    build:
+      context: .
+      dockerfile: TaskManager.Api/Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    volumes:
+      - ./certs:/https:ro
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/cert.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: Password

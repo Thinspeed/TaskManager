@@ -2,6 +2,15 @@ using AppDefinition.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(8080);
+    options.ListenAnyIP(8081, listenOptions =>
+    {
+        listenOptions.UseHttps("/https/cert.pfx", "Password");
+    });
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
