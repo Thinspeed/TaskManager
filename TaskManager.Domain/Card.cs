@@ -32,7 +32,7 @@ public partial class Card : Entity
 
     public Status Status => _status;
 
-    public DateTime EstimatedCompletionDate { get; set; }
+    public DateTime EstimatedCompletionDate { get; init; }
 
     public void StartProcessing()
     {
