@@ -2,6 +2,7 @@ using EFSelector;
 using EntityFramework.Persistence;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Api.Models;
 using TaskManager.Api.Requests;
 using TaskManager.Domain;
 
@@ -60,16 +61,4 @@ public class GetCardByIdQueryResponse
             .Select(src => src.EstimatedCompletionDate, dst => dst.EstimatedCompletionDate)
             .Select(src => src.Status, dst => dst.Status)
             .Select(src => src.User, dst => dst.User, UserModel.Selector);
-    
-    public class UserModel
-    {
-        public int Id { get; set; }
-        
-        public string Name { get; set; }
-
-        public static readonly EfSelector<User, UserModel> Selector =
-            EfSelector.Declare<User, UserModel>()
-                .Select(src => src.Id, dst => dst.Id)
-                .Select(src => src.Name, src => src.Name);
-    }
 }
