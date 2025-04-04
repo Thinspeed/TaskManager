@@ -11,8 +11,25 @@
         <PackageReference Include="MediatR" Version="12.4.1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.11"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
         <PackageReference Include="Sieve" Version="2.5.5" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\Cards\" />
+      <Folder Include="Features\Comments\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AppDefinition\AppDefinition.csproj" />
+      <ProjectReference Include="..\EFSelector\EFSelector.csproj" />
+      <ProjectReference Include="..\EntityFramework.Persistence\EntityFramework.Persistence.csproj" />
+      <ProjectReference Include="..\TaskManager.Infrastructure\TaskManager.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
