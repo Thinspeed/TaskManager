@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
@@ -6,6 +7,7 @@ using TaskManager.Api.Extensions;
 
 namespace TaskManager.Api.Features.Cards;
 
+[UsedImplicitly]
 public class CardsEndpointProvider : IEndpointProvider
 {
     public void RegisterEndpoints(IEndpointRouteBuilder builder)
