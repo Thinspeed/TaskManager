@@ -9,6 +9,9 @@ public class CardSieveConfiguration : ISieveConfiguration
 {
     public void Configure(SievePropertyMapper mapper)
     {
+        mapper.Property<Card>(x => x.Id)
+            .CanSort();
+        
         mapper.Property<Card>(x => x.CreationDate)
             .CanSort()
             .CanFilter();
