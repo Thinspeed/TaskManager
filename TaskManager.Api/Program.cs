@@ -1,5 +1,6 @@
 using AppDefinition.Extensions;
 using Microsoft.AspNetCore.CookiePolicy;
+using TaskManager.Api.AppDefinitions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,7 @@ builder.AddAppDefinitions();
 
 var app = builder.Build();
 
+app.UseCors(CorsDefinition.CorsPolicyName);
 app.InitAppDefinitions();
 
 // Configure the HTTP request pipeline.

@@ -27,6 +27,6 @@ public class CorsDefinition : IAppDefinition
             throw new Exception("App definitions must implement IApplicationBuilder interface to add Cors middleware.");
         }
         
-        appBuilder.UseCors(CorsPolicyName);
+        
     }
 }
