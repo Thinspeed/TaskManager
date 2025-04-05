@@ -25,14 +25,16 @@
                 <tr>
                     <th>Номер</th>
                     <th>Название</th>
+                    <th>Предпологаемая дата</th>
                 </tr>
                 </thead>
                 <tbody>
-                @foreach (var grid in _cards.Data)
+                @foreach (var card in _cards.Data)
                 {
                     <tr>
-                        <td>@grid.Id</td>
-                        <td>@grid.Name</td>
+                        <td>@card.Id</td>
+                        <td>@card.Name</td>
+                        <td>@card.EstimatedCompletionDate.ToLocalTime().ToString("g")</td>
                     </tr>
                 }
                 </tbody>
@@ -64,11 +66,17 @@
 
 <Modal @ref="_modalRef" Title="Создать задачу">
     <EditForm Model="CreateCardRequest" OnValidSubmit="HandleValidSubmit" FormName="LoginForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        
         <div class="modal-body">
+            <InputText @bind-Value="CreateCardRequest.Name" class="default-input" placeholder="Название"/>
+            <InputTextArea @bind-Value="CreateCardRequest.Description" class="default-input" placeholder="Описание"/>
+            <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="CreateCardRequest.EstimatedCompletionDate" class="default-input"/>
         </div>
         <div class="modal-footer">
             <button class="btn btn-outline-danger" @onclick="Close">Закрыть</button>
-            <button class="btn btn-outline-primary" @onclick="CreateCard"><span style="margin: auto">Создать</span></button>
+            <button class="btn btn-outline-primary" type="submit"><span style="margin: auto">Создать</span></button>
         </div>
     </EditForm>
 </Modal>
@@ -80,7 +88,7 @@
     private int _pageSize = 10;
 
     [SupplyParameterFromForm]
-    private CreateCardRequest CreateCardRequest { get; set; } = new();
+    private CreateCardRequest CreateCardRequest { get; set; } = new() { EstimatedCompletionDate = DateTime.UtcNow };
     private Modal? _modalRef;
     
     private void ShowModal()
@@ -122,21 +130,16 @@
     }
 
 
-    private void HandleValidSubmit()
+    private async void HandleValidSubmit()
     {
+        await CardService.CreateAsync(CreateCardRequest);
         
+        await LoadCardsDataAsync();
     }
     
     private void Close()
     {
         _modalRef?.Close();
-    }
-    
-    private async Task CreateCard()
-    {
-        await CardService.CreateAsync(CreateCardRequest);
-        
-        await LoadCardsDataAsync();
     }
     
     protected override async Task OnInitializedAsync()
