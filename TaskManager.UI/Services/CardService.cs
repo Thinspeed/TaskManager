@@ -17,6 +17,7 @@ public class CardService : ICardService
     
     public async Task<int> CreateAsync(CreateCardRequest request)
     {
+        request.EstimatedCompletionDate = request.EstimatedCompletionDate.ToUniversalTime();
         HttpResponseMessage response = await _client.PostJsonAsync("card/", request);
 
         return !response.IsSuccessStatusCode ? -1 : int.Parse(await response.Content.ReadAsStringAsync());
