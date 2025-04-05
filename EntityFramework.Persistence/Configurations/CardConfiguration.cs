@@ -10,6 +10,8 @@ public class CardConfiguration : EntityConfiguration<Card>
     {
         base.Configure(builder);
 
+        builder.Property(x => x.Status).HasConversion<int>();
+        
         builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);
     }
 }
