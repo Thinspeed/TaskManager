@@ -25,6 +25,16 @@ public class UserEndpointProvider : IEndpointProvider
                 return Results.Ok();
             });
         
+        builder.MapPost(
+                "/logout",
+                ([FromServices] IMediator mediator, HttpContext context) =>
+                {
+                    context.Response.Cookies.Delete("am-cookies");
+
+                    return Results.Ok();
+                })
+            .RequireAuthorization();
+        
         builder.MapGet(
                 "/user/{Id}",
                 async (IMediator mediator, [AsParameters] GetUserByIdQuery request) => Results.Ok(await mediator.Send(request)))
