@@ -28,4 +28,15 @@ public class JwtProvider(JwtOptions options) : IJwtProvider
 
         return result;
     }
+
+    public object GetUserInfo(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwt = handler.ReadJwtToken(token);
+        
+        var userId = jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        var userName = jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+        
+        return new { userId, userName };
+    }
 }

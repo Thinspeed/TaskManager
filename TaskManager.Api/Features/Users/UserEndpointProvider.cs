@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Api.Features.Users.Queries;
+using TaskManager.Infrastructure.JwtProvider;
 
 namespace TaskManager.Api.Features.Users;
 
@@ -27,11 +28,21 @@ public class UserEndpointProvider : IEndpointProvider
         
         builder.MapPost(
                 "/logout",
-                ([FromServices] IMediator mediator, HttpContext context) =>
+                (HttpContext context) =>
                 {
                     context.Response.Cookies.Delete("am-cookies");
 
                     return Results.Ok();
+                })
+            .RequireAuthorization();
+        
+        builder.MapGet(
+                "/user/status",
+                ([FromServices] IJwtProvider jwtProvider, HttpContext context) =>
+                {
+                    var cookie = context.Request.Cookies["am-cookies"];
+
+                    return Results.Ok(jwtProvider.GetUserInfo(cookie!));
                 })
             .RequireAuthorization();
         
