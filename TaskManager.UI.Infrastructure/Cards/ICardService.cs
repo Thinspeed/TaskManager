@@ -9,6 +9,6 @@ public interface ICardService
     Task<int> CreateAsync(CreateCardRequest request);
     Task<bool> StartAsync(int id);
     Task<bool> CompleteAsync(int id);
-    Task<PagedList<GetCardResponse>?> GetAsync(int page, int pageSize);
+    Task<PagedList<GetCardResponse>?> GetAsync(string sorts, string filters, int page, int pageSize);
     Task<GetCardResponse?> GetByIdAsync(int id);
 }

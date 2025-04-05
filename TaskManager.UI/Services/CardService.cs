@@ -37,9 +37,9 @@ public class CardService : ICardService
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<PagedList<GetCardResponse>?> GetAsync(int page, int pageSize)
+    public async Task<PagedList<GetCardResponse>?> GetAsync(string sorts, string filters, int page, int pageSize)
     {
-        string uri = "/card".CreatePagedUri(page, pageSize);
+        string uri = "/card".CreateSieveUri(sorts, filters, page, pageSize);
 
         PagedList<GetCardResponse>? response = await _client.GetJsonAsync<PagedList<GetCardResponse>>(uri);
         

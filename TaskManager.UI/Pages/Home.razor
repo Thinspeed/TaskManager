@@ -24,11 +24,42 @@
 
                 <thead>
                 <tr>
-                    <th>Номер</th>
-                    <th>Название</th>
-                    <th>Предпологаемая дата</th>
-                    <th>Статус</th>
-                    <th>Дата завершения</th>
+                    <SortableHeader Field="Id" Title="Номер"
+                                    SortOrder=@(HasSort("Id") ? GetSortDirection("Id") : null)
+                                    SortIndex=@GetSortIndex("Id")
+                                    OnToggle="ToggleSort" />
+                    
+                    <SortableHeader Field="Name" Title="Название"
+                                    SortOrder="@(HasSort("Name") ? GetSortDirection("Name") : null)"
+                                    SortIndex=@GetSortIndex("Name")
+                                    OnToggle="ToggleSort" />
+                    
+                    <SortableHeader Field="Status" Title="Статус"
+                                    SortOrder="@(HasSort("Status") ? GetSortDirection("Status") : null)"
+                                    SortIndex=@GetSortIndex("Status")
+                                    OnToggle="ToggleSort" />
+
+                    <SortableHeader Field="CreationDate" Title="Дата создания"
+                                    SortOrder="@(HasSort("CreationDate") ? GetSortDirection("CreationDate") : null)"
+                                    SortIndex=@GetSortIndex("CreationDate")
+                                    OnToggle="ToggleSort" />
+                    
+                    <SortableHeader Field="EstimatedCompletionDate" Title="Предполагаемая дата"
+                                    SortOrder="@(HasSort("EstimatedCompletionDate") ? GetSortDirection("EstimatedCompletionDate") : null)"
+                                    SortIndex=@GetSortIndex("EstimatedCompletionDate")
+                                    OnToggle="ToggleSort" />
+                    
+                    <SortableHeader Field="ClosingDate" Title="Дата завершения"
+                                    SortOrder="@(HasSort("ClosingDate") ? GetSortDirection("ClosingDate") : null)"
+                                    SortIndex=@GetSortIndex("ClosingDate")
+                                    OnToggle="ToggleSort" />
+
+                    <SortableHeader Field="User.Name" Title="Создатель"
+                                    SortOrder="@(HasSort("User.Name") ? GetSortDirection("User.Name") : null)"
+                                    SortIndex=@GetSortIndex("User.Name")
+                                    OnToggle="ToggleSort" />
+                    
+                    
                 </tr>
                 </thead>
                 <tbody>
@@ -37,13 +68,15 @@
                     <tr @ondblclick="@(() => NavigateToDetails(card.Id))" style="cursor: pointer;">
                         <td>@card.Id</td>
                         <td>@card.Name</td>
-                        <td>@card.EstimatedCompletionDate.ToLocalTime().ToString("g")</td>
                         <td>
                             <span class="@GetStatusClass(card.Status)">
                                 @GetStatusText(card.Status)
                             </span>
                         </td>
+                        <td>@card.CreationDate.ToLocalTime().ToString("g")</td>
+                        <td>@card.EstimatedCompletionDate.ToLocalTime().ToString("g")</td>
                         <td>@(card.ClosingDate?.ToLocalTime().ToString("g") ?? "-")</td>
+                        <td>@card.User.Name</td>
                     </tr>
                 }
                 </tbody>
@@ -84,7 +117,7 @@
             <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="CreateCardRequest.EstimatedCompletionDate" class="default-input"/>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-outline-danger" @onclick="Close">Закрыть</button>
+            <button class="btn btn-outline-danger" @onclick="CloseModal">Закрыть</button>
             <button class="btn btn-outline-primary" type="submit"><span style="margin: auto">Создать</span></button>
         </div>
     </EditForm>
@@ -96,6 +129,8 @@
     private int _currentPage = 1;
     private int _pageSize = 10;
 
+    private List<(string Field, string Direction)> _sorts = new();
+    
     [SupplyParameterFromForm]
     private CreateCardRequest CreateCardRequest { get; set; } = new() { EstimatedCompletionDate = DateTime.UtcNow };
     private Modal? _modalRef;
@@ -104,21 +139,42 @@
     {
         await LoadCardsDataAsync();
     }
-    
-    private async Task LoadCardsDataAsync()
+
+    #region Sorting
+
+    private async Task ToggleSort(string fieldName)
     {
-        _cards = await CardService.GetAsync(_currentPage, _pageSize);
+        var index = _sorts.FindIndex(s => s.Field == fieldName);
+
+        if (index == -1)
+        {
+            _sorts.Add((fieldName, "asc"));
+        }
+        else if (_sorts[index].Direction == "asc")
+        {
+            _sorts[index] = (fieldName, "desc");
+        }
+        else
+        {
+            _sorts.RemoveAt(index);
+        }
+
+        await LoadCardsDataAsync();
     }
     
-    private void ShowModal()
+    private bool HasSort(string field) => _sorts.Any(s => s.Field == field);
+    
+    private string GetSortDirection(string field) => _sorts.FirstOrDefault(s => s.Field == field).Direction;
+    
+    private int? GetSortIndex(string field)
     {
-        _modalRef?.Show();
+        var index = _sorts.FindIndex(s => s.Field == field);
+        return index >= 0 ? index : null;
     }
 
-    private void NavigateToDetails(int cardId)
-    {
-        Navigation.NavigateTo($"/card/{cardId}");
-    }
+    #endregion
+    
+    #region Pagination
     
     private async Task OnPageSizeChanged(ChangeEventArgs e)
     {
@@ -146,7 +202,16 @@
             await LoadCardsDataAsync();
         }
     }
+    
+    #endregion
 
+    #region CreateForm
+
+    private void ShowModal()
+    {
+        _modalRef?.Show();
+    }
+    
     private async void HandleValidSubmit()
     {
         await CardService.CreateAsync(CreateCardRequest);
@@ -154,9 +219,26 @@
         await LoadCardsDataAsync();
     }
     
-    private void Close()
+    private void CloseModal()
     {
         _modalRef?.Close();
+    }
+
+    #endregion
+
+    #region Table
+
+    private async Task LoadCardsDataAsync()
+    {
+        string sortString = string.Join(",", _sorts.Select(s => s.Direction == "desc" ? $"-{s.Field}" : s.Field));
+        
+        _cards = await CardService.GetAsync(sortString, string.Empty, _currentPage, _pageSize);
+        StateHasChanged();
+    }
+    
+    private void NavigateToDetails(int cardId)
+    {
+        Navigation.NavigateTo($"/card/{cardId}");
     }
     
     private string GetStatusText(int status) => status switch
@@ -174,4 +256,7 @@
         2 => "status-done",        // зелёный
         _ => "status-unknown"
     };
+
+    #endregion
+    
 }
