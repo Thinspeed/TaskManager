@@ -14,7 +14,10 @@ public class JwtProvider(JwtOptions options) : IJwtProvider
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.SecretKey)),
             SecurityAlgorithms.HmacSha256);
 
-        Claim[] claims = [new("userId", user.Id.ToString())];
+        Claim[] claims = [
+            new (ClaimTypes.Name, user.Name),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString())
+        ];
         
         var token = new JwtSecurityToken(
             claims: claims,
