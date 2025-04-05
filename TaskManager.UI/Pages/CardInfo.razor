@@ -1,0 +1,111 @@
+@page "/card/{id:int}"
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using TaskManager.UI.Infrastructure.Cards
+@using TaskManager.UI.Models.Cards
+@using TaskManager.UI.Services
+
+@attribute [Authorize]
+
+@inject ICardService CardService
+@inject NavigationManager NavigationManager
+@inject CustomAuthStateProvider AuthStateProvider
+
+<div class="content-wrapper">
+    <button class="btn btn-outline-secondary mb-3" @onclick="GoBack">
+        ← Назад
+    </button>
+    
+    @if (_card is not null)
+    {
+        <div class="card-details">
+            <h3>@_card.Name</h3>
+            <p><strong>Описание:</strong> @_card.Description</p>
+            <p><strong>Создана:</strong> @_card.CreationDate.ToLocalTime().ToString("g")</p>
+            <p><strong>Статус:</strong> <span class="@GetStatusClass(_card.Status)">@GetStatusText(_card.Status)</span></p>
+            <p><strong>Оценочная дата завершения:</strong> @_card.EstimatedCompletionDate.ToLocalTime().ToString("g")</p>
+
+            @if (_card.ClosingDate is not null)
+            {
+            <p><strong>Дата закрытия:</strong> @_card.ClosingDate.Value.ToLocalTime().ToString("g")</p>
+            }
+
+            @if (_card.ActualProcessingTime.HasValue)
+            {
+            <p><strong>Фактическое время выполнения:</strong> @TimeSpan.FromTicks(_card.ActualProcessingTime.Value).ToString(@"d\.hh\:mm\:ss")</p>
+            }
+
+            <p><strong>Создатель:</strong> @_card.User?.Name</p>
+            @if (CanStart)
+            {   
+                <button class="btn btn-outline-primary mt-3" @onclick="StartCard">Начать</button>
+            }
+            @if (CanComplete)
+            {
+                <button class="btn btn-outline-success mt-3 ms-2" @onclick="CompleteCard">Завершить</button>
+            }
+        </div>
+    }
+    else
+    {
+        <p>Loading...</p>
+    }
+    
+</div>
+
+
+@code {
+    [Parameter] public int Id { get; set; }
+    
+    private bool CanStart => _card?.Status == 0 && _card?.User?.Id == _currentUserId;
+    private bool CanComplete => _card?.Status == 1 && _card?.User?.Id == _currentUserId;
+    
+    private GetCardResponse? _card;
+    private int _currentUserId = -1;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        int.TryParse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value, out _currentUserId);
+        
+        _card = await CardService.GetByIdAsync(Id);
+    }
+    
+    private async Task StartCard()
+    {
+        await CardService.StartAsync(Id);
+        _card = await CardService.GetByIdAsync(Id);
+        StateHasChanged();
+    }
+
+    private async Task CompleteCard()
+    {
+        await CardService.CompleteAsync(Id);
+        _card = await CardService.GetByIdAsync(Id);
+        StateHasChanged();
+    }
+    
+    private string GetStatusText(int status) => status switch
+    {
+        0 => "Создана",
+        1 => "В процессе",
+        2 => "Завершена",
+        _ => "Неизвестно"
+    };
+
+    private string GetStatusClass(int status) => status switch
+    {
+        0 => "text-secondary",
+        1 => "text-info",
+        2 => "text-success",
+        _ => "text-muted"
+    };
+    
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

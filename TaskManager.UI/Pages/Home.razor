@@ -10,6 +10,7 @@
 @attribute [Authorize]
 
 @inject ICardService CardService
+@inject NavigationManager Navigation
 
 <div class="content-wrapper">
     <button class="btn btn-primary create-button" @onclick="ShowModal">
@@ -26,15 +27,23 @@
                     <th>Номер</th>
                     <th>Название</th>
                     <th>Предпологаемая дата</th>
+                    <th>Статус</th>
+                    <th>Дата завершения</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach (var card in _cards.Data)
                 {
-                    <tr>
+                    <tr @ondblclick="@(() => NavigateToDetails(card.Id))" style="cursor: pointer;">
                         <td>@card.Id</td>
                         <td>@card.Name</td>
                         <td>@card.EstimatedCompletionDate.ToLocalTime().ToString("g")</td>
+                        <td>
+                            <span class="@GetStatusClass(card.Status)">
+                                @GetStatusText(card.Status)
+                            </span>
+                        </td>
+                        <td>@(card.ClosingDate?.ToLocalTime().ToString("g") ?? "-")</td>
                     </tr>
                 }
                 </tbody>
@@ -91,11 +100,25 @@
     private CreateCardRequest CreateCardRequest { get; set; } = new() { EstimatedCompletionDate = DateTime.UtcNow };
     private Modal? _modalRef;
     
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCardsDataAsync();
+    }
+    
+    private async Task LoadCardsDataAsync()
+    {
+        _cards = await CardService.GetAsync(_currentPage, _pageSize);
+    }
+    
     private void ShowModal()
     {
         _modalRef?.Show();
     }
-    
+
+    private void NavigateToDetails(int cardId)
+    {
+        Navigation.NavigateTo($"/card/{cardId}");
+    }
     
     private async Task OnPageSizeChanged(ChangeEventArgs e)
     {
@@ -123,12 +146,6 @@
             await LoadCardsDataAsync();
         }
     }
-    
-    private async Task LoadCardsDataAsync()
-    {
-        _cards = await CardService.GetAsync(_currentPage, _pageSize);
-    }
-
 
     private async void HandleValidSubmit()
     {
@@ -142,8 +159,19 @@
         _modalRef?.Close();
     }
     
-    protected override async Task OnInitializedAsync()
+    private string GetStatusText(int status) => status switch
     {
-        await LoadCardsDataAsync();
-    }
+        0 => "Создана",
+        1 => "В процессе",
+        2 => "Завершена",
+        _ => "Неизвестно"
+    };
+
+    private string GetStatusClass(int status) => status switch
+    {
+        0 => "status-created",     // серый
+        1 => "status-in-progress", // синий
+        2 => "status-done",        // зелёный
+        _ => "status-unknown"
+    };
 }

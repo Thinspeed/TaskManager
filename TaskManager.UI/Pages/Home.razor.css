@@ -24,6 +24,23 @@
     margin: 20px;
 }
 
+.status-created {
+    color: #6c757d;
+    font-weight: 600;
+}
+
+.status-in-progress {
+    color: #0d6efd;
+}   
+
+.status-done {
+    color: #198754;
+}
+
+.status-unknown {
+    color: #dc3545;
+}
+
 .options-wrapper {
     margin-top: auto;
     display: flex;
