@@ -1,0 +1,69 @@
+@page "/Login"
+
+@using Microsoft.AspNetCore.WebUtilities
+@using TaskManager.UI.Infrastructure.Auth
+@using TaskManager.UI.Infrastructure.Shared.Contracts
+
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<div class="content-wrapper">
+    <div class="modal-wrapper">
+
+        <EditForm Model="AuthRequest" OnValidSubmit="HandleValidSubmit" FormName="LoginForm">
+            <div class="modal-header">
+                <h4>Вход в систему</h4>
+            </div>
+            <div class="modal-body">
+                <InputText @bind-Value="AuthRequest.Login" class="default-input" placeholder="логин"/>
+                <InputText @bind-Value="AuthRequest.Password" class="default-input" placeholder="пароль"/>
+            </div>
+            <div class="modal-footer">
+
+                <button type="submit" class="btn btn-outline-primary"><span style="margin: auto">Войти</span></button>
+            </div>
+        </EditForm>
+
+        @if (_loginFailed)
+        {
+        <p class="text-danger">Неверный логин или пароль.</p>
+        }
+    </div>
+</div>
+
+
+
+
+@code {
+    [SupplyParameterFromForm]
+    private LoginRequest AuthRequest { get; set; } = new();
+    
+    private bool _loginFailed = false;
+    
+    private string _returnUrl = "/";
+
+    protected override void OnInitialized()
+    {
+        var uri = NavigationManager.Uri;
+        var uriObj = new Uri(uri);
+        var queryParams = QueryHelpers.ParseQuery(uriObj.Query);
+        
+        if (queryParams.TryGetValue("returnUrl", out var url))
+        {
+            _returnUrl = url.ToString();
+        }
+    }
+    
+    private async Task HandleValidSubmit()
+    {
+        bool result  = !await AuthService.LoginAsync(AuthRequest);
+        if (result)
+        {
+            NavigationManager.NavigateTo(_returnUrl, true);
+        }
+        else
+        {
+            _loginFailed = false;
+        }
+    }
+}
