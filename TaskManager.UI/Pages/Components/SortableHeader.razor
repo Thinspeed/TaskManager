@@ -1,0 +1,29 @@
+<th @onclick="ToggleSort" style="cursor:pointer;">
+    @Title
+    @if (SortOrder is not null)
+    {
+        <span>
+            @(SortOrder == "asc" ? "↑" : "↓")
+            @if (SortIndex.HasValue)
+            {
+                <sup>@(SortIndex.Value + 1)</sup> <!-- +1 потому что индекс с нуля -->
+            }
+        </span>
+    }
+</th>
+
+@code {
+    [Parameter] public string Field { get; set; } = default!;
+    [Parameter] public string Title { get; set; } = default!;
+    [Parameter] public EventCallback<string> OnToggle { get; set; }
+    [Parameter] public string? SortOrder { get; set; }
+    [Parameter] public int? SortIndex { get; set; }
+
+    private async Task ToggleSort()
+    {
+        if (OnToggle.HasDelegate)
+        {
+            await OnToggle.InvokeAsync(Field);
+        }
+    }
+}
