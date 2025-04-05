@@ -16,11 +16,19 @@ public class CardSieveConfiguration : ISieveConfiguration
             .CanSort()
             .CanFilter();
 
+        mapper.Property<Card>(x => x.EstimatedCompletionDate)
+            .CanSort()
+            .CanFilter();
+        
         mapper.Property<Card>(x => x.ClosingDate)
             .CanSort()
             .CanFilter();
         
         mapper.Property<Card>(x => x.User.Id)
+            .CanSort()
+            .CanFilter();
+
+        mapper.Property<Card>(x => x.User.Name)
             .CanSort()
             .CanFilter();
         
