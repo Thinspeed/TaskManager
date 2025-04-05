@@ -50,20 +50,21 @@
         
         if (queryParams.TryGetValue("returnUrl", out var url))
         {
+            
             _returnUrl = url.ToString();
         }
     }
     
     private async Task HandleValidSubmit()
     {
-        bool result  = !await AuthService.LoginAsync(AuthRequest);
+        bool result  = await AuthService.LoginAsync(AuthRequest);
         if (result)
         {
             NavigationManager.NavigateTo(_returnUrl, true);
         }
         else
         {
-            _loginFailed = false;
+            _loginFailed = true;
         }
     }
 }

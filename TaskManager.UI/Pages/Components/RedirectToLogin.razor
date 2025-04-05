@@ -6,7 +6,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ReturnUrl = "~/" + ReturnUrl;
+        //ReturnUrl = "~/" + ReturnUrl;
         Navigation.NavigateTo("/Login?returnUrl=" + ReturnUrl, true);
         await base.OnInitializedAsync();
     }
