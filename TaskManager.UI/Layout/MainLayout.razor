@@ -1,15 +1,25 @@
 ﻿@inherits LayoutComponentBase
 
 @using System.Security.Claims
+@using TaskManager.UI.Infrastructure.Auth
 @using TaskManager.UI.Services
 @using TaskManager.UI.Services.Auth
 
+@inject NavigationManager NavigationManager
 @inject CustomAuthStateProvider AuthStateProvider
+@inject IAuthService AuthService
 
 <div class="page">
     <main>
-        <div class="top-row px-4">
-            @(_currentUserName ?? string.Empty)
+        <div class="top-row px-4 class" @onclick="ToggleUserMenu">
+            <div class="user-info">
+                @(_currentUserName ?? string.Empty)
+
+                @if (_showLogout)
+                {
+                    <button class="btn btn-secondary logout-button" @onclick:stopPropagation="true" @onclick="Logout">Выйти</button>
+                }
+            </div>
         </div>
 
         <article class="content px-4">
@@ -19,8 +29,8 @@
 </div>
 
 @code {
-
     private string? _currentUserName;
+    private bool _showLogout = false;
     
     protected override async Task OnInitializedAsync()
     {
@@ -30,4 +40,15 @@
         _currentUserName = user.FindFirst(ClaimTypes.Name)?.Value;
     }
 
+    private void ToggleUserMenu()
+    {
+        _showLogout = !_showLogout;
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        NavigationManager.NavigateTo("/login", forceLoad: true);
+    }
+    
 }

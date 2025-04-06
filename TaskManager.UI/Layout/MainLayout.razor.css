@@ -35,6 +35,16 @@ main {
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    
+.user-info {
+    position: relative;
+}
+
+.logout-button {
+    position: absolute;
+    top: 110%;
+    left: 0;
+}
 
 @media (max-width: 640.98px) {
     .top-row {
