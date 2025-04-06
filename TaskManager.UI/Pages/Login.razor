@@ -1,5 +1,6 @@
 @page "/Login"
 
+@using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.WebUtilities
 @using TaskManager.UI.Infrastructure.Auth
 @using TaskManager.UI.Infrastructure.Shared.Contracts
@@ -11,15 +12,20 @@
     <div class="modal-wrapper">
 
         <EditForm Model="AuthRequest" OnValidSubmit="HandleValidSubmit" FormName="LoginForm">
+            <DataAnnotationsValidator />
+            
             <div class="modal-header">
                 <h4>Вход в систему</h4>
             </div>
             <div class="modal-body">
                 <InputText @bind-Value="AuthRequest.Login" class="default-input" placeholder="логин"/>
+                <ValidationMessage For="@(() => AuthRequest.Login)" />
+                
                 <InputText @bind-Value="AuthRequest.Password" class="default-input" placeholder="пароль"/>
+                <ValidationMessage For="@(() => AuthRequest.Password)" />
             </div>
             <div class="modal-footer">
-
+                <button class="btn btn-link" @onclick="GoToRegister">Регистрация</button>
                 <button type="submit" class="btn btn-outline-primary"><span style="margin: auto">Войти</span></button>
             </div>
         </EditForm>
@@ -36,7 +42,7 @@
 
 @code {
     [SupplyParameterFromForm]
-    private LoginRequest AuthRequest { get; set; } = new();
+    private LoginModel AuthRequest { get; set; } = new();
     
     private bool _loginFailed = false;
     
@@ -57,7 +63,12 @@
     
     private async Task HandleValidSubmit()
     {
-        bool result  = await AuthService.LoginAsync(AuthRequest);
+        bool result  = await AuthService.LoginAsync(new LoginRequest()
+        {
+            Login = AuthRequest.Login,
+            Password = AuthRequest.Password
+        });
+        
         if (result)
         {
             NavigationManager.NavigateTo(_returnUrl, true);
@@ -66,5 +77,21 @@
         {
             _loginFailed = true;
         }
+    }
+
+    private void GoToRegister()
+    {
+        var encodedReturnUrl = Uri.EscapeDataString(_returnUrl);
+        NavigationManager.NavigateTo($"/Register?returnUrl={encodedReturnUrl}");
+    }
+
+    private class LoginModel
+    {
+        [Required(ErrorMessage = "Логин обязателен")]
+        public string Login { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Пароль обязателен")]
+        //[MinLength(6, ErrorMessage = "Пароль должен содержать минимум 6 символов")]
+        public string Password { get; set; } = string.Empty;
     }
 }

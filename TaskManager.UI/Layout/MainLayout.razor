@@ -1,8 +1,15 @@
 ﻿@inherits LayoutComponentBase
+
+@using System.Security.Claims
+@using TaskManager.UI.Services
+@using TaskManager.UI.Services.Auth
+
+@inject CustomAuthStateProvider AuthStateProvider
+
 <div class="page">
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            @(_currentUserName ?? string.Empty)
         </div>
 
         <article class="content px-4">
@@ -10,3 +17,17 @@
         </article>
     </main>
 </div>
+
+@code {
+
+    private string? _currentUserName;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        _currentUserName = user.FindFirst(ClaimTypes.Name)?.Value;
+    }
+
+}

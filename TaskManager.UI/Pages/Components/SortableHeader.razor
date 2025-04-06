@@ -1,15 +1,14 @@
-<th @onclick="ToggleSort" style="cursor:pointer;">
+<th @onclick="ToggleSort" style="cursor: pointer;">
     @Title
-    @if (SortOrder is not null)
-    {
-        <span>
-            @(SortOrder == "asc" ? "↑" : "↓")
-            @if (SortIndex.HasValue)
-            {
-                <sup>@(SortIndex.Value + 1)</sup> <!-- +1 потому что индекс с нуля -->
-            }
-        </span>
-    }
+    <span class="sort-icon @(SortOrder is not null ? "visible" : "")">
+        @(SortOrder == "asc" ? "↑" : "↓")
+        @if (SortIndex.HasValue)
+        {
+        <span class="sort-badge">
+                @(SortIndex.Value + 1)
+            </span>
+        }
+    </span>
 </th>
 
 @code {

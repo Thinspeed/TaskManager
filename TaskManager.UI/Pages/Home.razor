@@ -1,11 +1,13 @@
 ﻿@page "/"
 
+@using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authorization
 @using TaskManager.UI.Infrastructure.Cards
 @using TaskManager.UI.Infrastructure.Cards.Contracts
 @using TaskManager.UI.Infrastructure.Shared
 @using TaskManager.UI.Models.Cards
 @using TaskManager.UI.Pages.Components
+@using TaskManager.UI.Services.Validation
 
 @attribute [Authorize]
 
@@ -109,12 +111,14 @@
 <Modal @ref="_modalRef" Title="Создать задачу">
     <EditForm Model="CreateCardRequest" OnValidSubmit="HandleValidSubmit" FormName="LoginForm">
         <DataAnnotationsValidator />
-        <ValidationSummary />
         
         <div class="modal-body">
             <InputText @bind-Value="CreateCardRequest.Name" class="default-input" placeholder="Название"/>
+            <ValidationMessage For="@(() => CreateCardRequest.Name)" />
             <InputTextArea @bind-Value="CreateCardRequest.Description" class="default-input" placeholder="Описание"/>
+            <ValidationMessage For="@(() => CreateCardRequest.Description)" />
             <InputDate Type="InputDateType.DateTimeLocal" @bind-Value="CreateCardRequest.EstimatedCompletionDate" class="default-input"/>
+            <ValidationMessage For="@(() => CreateCardRequest.EstimatedCompletionDate)" />
         </div>
         <div class="modal-footer">
             <button class="btn btn-outline-danger" @onclick="CloseModal">Закрыть</button>
@@ -132,7 +136,7 @@
     private List<(string Field, string Direction)> _sorts = new();
     
     [SupplyParameterFromForm]
-    private CreateCardRequest CreateCardRequest { get; set; } = new() { EstimatedCompletionDate = DateTime.UtcNow };
+    private CreateCardModel CreateCardRequest { get; set; } = new() { EstimatedCompletionDate = DateTime.UtcNow };
     private Modal? _modalRef;
     
     protected override async Task OnInitializedAsync()
@@ -214,7 +218,12 @@
     
     private async void HandleValidSubmit()
     {
-        await CardService.CreateAsync(CreateCardRequest);
+        await CardService.CreateAsync(new CreateCardRequest()
+        {
+            Name = CreateCardRequest.Name,
+            Description = CreateCardRequest.Description,
+            EstimatedCompletionDate = CreateCardRequest.EstimatedCompletionDate
+        });
         
         await LoadCardsDataAsync();
     }
@@ -224,6 +233,18 @@
         _modalRef?.Close();
     }
 
+    private class CreateCardModel
+    {
+        [Required(ErrorMessage = "Название обязательно")]
+        public string Name { get; set; } = string.Empty;
+    
+        public string? Description { get; set; }
+    
+        [Required(ErrorMessage = "Дата обязательна")]
+        [FutureDate(ErrorMessage = "Дата должна быть в будущем")]
+        public DateTime EstimatedCompletionDate { get; set; }
+    }
+    
     #endregion
 
     #region Table

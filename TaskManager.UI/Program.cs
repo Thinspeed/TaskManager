@@ -5,7 +5,10 @@ using TaskManager.UI;
 using TaskManager.UI.Infrastructure.Auth;
 using TaskManager.UI.Infrastructure.Cards;
 using TaskManager.UI.Infrastructure.User;
-using TaskManager.UI.Services;
+using TaskManager.UI.Services.Auth;
+using TaskManager.UI.Services.Cards;
+using TaskManager.UI.Services.Common;
+using TaskManager.UI.Services.Users;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
