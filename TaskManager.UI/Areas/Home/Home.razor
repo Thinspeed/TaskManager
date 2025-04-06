@@ -60,38 +60,31 @@
                 <thead>
                 <tr>
                     <SortableHeader Field="Id" Title="Номер"
-                                    SortOrder=@(HasSort("Id") ? GetSortDirection("Id") : null)
-                                    SortIndex=@GetSortIndex("Id")
+                                    GetSortIndex=@GetSortIndex
                                     OnToggle="ToggleSort"/>
 
                     <SortableHeader Field="Name" Title="Название"
-                                    SortOrder="@(HasSort("Name") ? GetSortDirection("Name") : null)"
-                                    SortIndex=@GetSortIndex("Name")
+                                    GetSortIndex=@GetSortIndex
                                     OnToggle="ToggleSort"/>
 
                     <SortableHeader Field="Status" Title="Статус"
-                                    SortOrder="@(HasSort("Status") ? GetSortDirection("Status") : null)"
-                                    SortIndex=@GetSortIndex("Status")
+                                    GetSortIndex=@GetSortIndex
                                     OnToggle="ToggleSort"/>
 
                     <SortableHeader Field="CreationDate" Title="Дата создания"
-                                    SortOrder="@(HasSort("CreationDate") ? GetSortDirection("CreationDate") : null)"
-                                    SortIndex=@GetSortIndex("CreationDate")
+                                    GetSortIndex=@GetSortIndex
                                     OnToggle="ToggleSort"/>
 
                     <SortableHeader Field="EstimatedCompletionDate" Title="Предполагаемая дата"
-                                    SortOrder="@(HasSort("EstimatedCompletionDate") ? GetSortDirection("EstimatedCompletionDate") : null)"
-                                    SortIndex=@GetSortIndex("EstimatedCompletionDate")
+                                    GetSortIndex=@GetSortIndex
                                     OnToggle="ToggleSort"/>
 
                     <SortableHeader Field="ClosingDate" Title="Дата завершения"
-                                    SortOrder="@(HasSort("ClosingDate") ? GetSortDirection("ClosingDate") : null)"
-                                    SortIndex=@GetSortIndex("ClosingDate")
+                                    GetSortIndex=@GetSortIndex
                                     OnToggle="ToggleSort"/>
 
                     <SortableHeader Field="User.Name" Title="Создатель"
-                                    SortOrder="@(HasSort("User.Name") ? GetSortDirection("User.Name") : null)"
-                                    SortIndex=@GetSortIndex("User.Name")
+                                    GetSortIndex=@GetSortIndex
                                     OnToggle="ToggleSort"/>
 
 
@@ -185,31 +178,27 @@
     
     #region Sorting
 
-    private List<(string Field, string Direction)> _sorts = new();
+    private List<SortTerm> _sorts = new();
     
-    private async Task ToggleSort(string fieldName)
+    private async Task ToggleSort(SortTerm sortTerm)
     {
-        var index = _sorts.FindIndex(s => s.Field == fieldName);
-
-        if (index == -1)
+        if (sortTerm.Direction == SortDirection.Asc)
         {
-            _sorts.Add((fieldName, "asc"));
+            _sorts.Add(sortTerm);
         }
-        else if (_sorts[index].Direction == "asc")
+        else if (sortTerm.Direction == SortDirection.Desc)
         {
-            _sorts[index] = (fieldName, "desc");
+            int index = _sorts.FindIndex(x => x.Field == sortTerm.Field);
+            _sorts[index] = sortTerm;
         }
         else
         {
+            int index = _sorts.FindIndex(x => x.Field == sortTerm.Field);
             _sorts.RemoveAt(index);
         }
 
         await LoadCardsDataAsync();
     }
-    
-    private bool HasSort(string field) => _sorts.Any(s => s.Field == field);
-    
-    private string GetSortDirection(string field) => _sorts.FirstOrDefault(s => s.Field == field).Direction;
     
     private int? GetSortIndex(string field)
     {
@@ -302,7 +291,7 @@
     
     private async Task LoadCardsDataAsync()
     {
-        string sortString = string.Join(",", _sorts.Select(s => s.Direction == "desc" ? $"-{s.Field}" : s.Field));
+        string sortString = string.Join(",", _sorts);
         string filteringString = string.Join(",", _filters);
         
         _cards = await CardService.GetAsync(sortString, filteringString, _currentPage, _pageSize);

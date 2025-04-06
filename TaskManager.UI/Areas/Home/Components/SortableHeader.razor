@@ -1,11 +1,12 @@
+@using TaskManager.UI.Sieve
 <th @onclick="ToggleSort" style="cursor: pointer;">
     @Title
-    <span class="sort-icon @(SortOrder is not null ? "visible" : "")">
-        @(SortOrder == "asc" ? "↑" : "↓")
-        @if (SortIndex.HasValue)
+    <span class="sort-icon @(_sortDirection != SortDirection.None ? "visible" : "")">
+        @(_sortDirection == SortDirection.Asc ? "↑" : "↓")
+        @if (GetSortIndex.Invoke(Field).HasValue)
         {
         <span class="sort-badge">
-                @(SortIndex.Value + 1)
+                @(GetSortIndex.Invoke(Field)!.Value + 1)
             </span>
         }
     </span>
@@ -14,15 +15,23 @@
 @code {
     [Parameter] public string Field { get; set; } = default!;
     [Parameter] public string Title { get; set; } = default!;
-    [Parameter] public EventCallback<string> OnToggle { get; set; }
-    [Parameter] public string? SortOrder { get; set; }
-    [Parameter] public int? SortIndex { get; set; }
+    [Parameter] public EventCallback<SortTerm> OnToggle { get; set; }
+    [Parameter] public Func<string, int?> GetSortIndex { get; set; }
 
+    private SortDirection _sortDirection = SortDirection.None;
+    
     private async Task ToggleSort()
     {
+        _sortDirection = (SortDirection)(((int)_sortDirection + 1) % 3);
         if (OnToggle.HasDelegate)
         {
-            await OnToggle.InvokeAsync(Field);
+            await OnToggle.InvokeAsync(new SortTerm()
+            {
+                Field = Field,
+                Direction = _sortDirection
+            });
         }
+        
+        StateHasChanged();
     }
 }

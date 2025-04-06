@@ -2,11 +2,11 @@ namespace TaskManager.UI.Sieve;
 
 public class FilterTerm
 {
-    public required string Field { get; set; }
+    public required string Field { get; init; }
         
-    public required object? Value { get; set; }
+    public required object? Value { get; init; }
         
-    public required FilterOperation Operation { get; set; }
+    public required FilterOperation Operation { get; init; }
 
     public override string ToString()
     {
