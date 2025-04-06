@@ -1,7 +1,9 @@
 using AppDefinition.Abstractions;
+using JetBrains.Annotations;
 
 namespace TaskManager.Api.AppDefinitions;
 
+[UsedImplicitly]
 public class CorsDefinition : IAppDefinition
 {
     public const string CorsPolicyName = "corsDefaultPolicy";
@@ -27,6 +29,6 @@ public class CorsDefinition : IAppDefinition
             throw new Exception("App definitions must implement IApplicationBuilder interface to add Cors middleware.");
         }
         
-        
+        appBuilder.UseCors(CorsDefinition.CorsPolicyName);
     }
 }

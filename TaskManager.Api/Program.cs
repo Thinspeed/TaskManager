@@ -20,7 +20,6 @@ builder.AddAppDefinitions();
 
 var app = builder.Build();
 
-app.UseCors(CorsDefinition.CorsPolicyName);
 app.InitAppDefinitions();
 
 // Configure the HTTP request pipeline.
