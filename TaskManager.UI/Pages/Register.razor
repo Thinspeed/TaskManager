@@ -1,0 +1,95 @@
+@page "/Register"
+
+@using Microsoft.AspNetCore.WebUtilities
+@using System.ComponentModel.DataAnnotations
+@using TaskManager.UI.Infrastructure.Auth
+@using TaskManager.UI.Infrastructure.Shared.Contracts
+
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<div class="content-wrapper">
+    <div class="modal-wrapper">
+        <EditForm Model="RegisterRequest" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            
+            <div class="modal-header">
+                <h4>Регистрация</h4>
+            </div>
+            <div class="modal-body">
+                <InputText @bind-Value="RegisterRequest.Name" class="default-input" placeholder="Имя" />
+                <ValidationMessage For="@(() => RegisterRequest.Name)" />
+
+                <InputText @bind-Value="RegisterRequest.Login" class="default-input" placeholder="Логин" />
+                <ValidationMessage For="@(() => RegisterRequest.Login)" />
+
+                <InputText @bind-Value="RegisterRequest.Password" type="password" class="default-input" placeholder="Пароль" />
+                <ValidationMessage For="@(() => RegisterRequest.Password)" />
+
+                <InputText @bind-Value="RegisterRequest.ConfirmPassword" type="password" class="default-input" placeholder="Подтверждение пароля" />
+                <ValidationMessage For="@(() => RegisterRequest.ConfirmPassword)" />
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-outline-primary">Зарегистрироваться</button>
+            </div>
+
+            @if (_registerFailed)
+            {
+                <p class="text-danger">Не удалось зарегистрироваться. Попробуйте снова.</p>
+            }
+            
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private RegisterModel RegisterRequest { get; set; } = new();
+    private string _returnUrl = "/";
+    private bool _registerFailed = false;
+
+    protected override void OnInitialized()
+    {
+        var uri = NavigationManager.Uri;
+        var query = QueryHelpers.ParseQuery(new Uri(uri).Query);
+        if (query.TryGetValue("returnUrl", out var returnUrl))
+        {
+            _returnUrl = returnUrl.ToString();
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        bool result = await AuthService.RegisterAsync(new RegisterRequest
+        {
+            Name = RegisterRequest.Name,
+            Login = RegisterRequest.Login,
+            Password = RegisterRequest.Password
+        });
+
+        if (result)
+        {
+            NavigationManager.NavigateTo(_returnUrl, true);
+        }
+        else
+        {
+            _registerFailed = true;
+        }
+    }
+
+    private class RegisterModel
+    {
+        [Required(ErrorMessage = "Имя обязательно")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Логин обязателен")]
+        public string Login { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Пароль обязателен")]
+        [MinLength(6, ErrorMessage = "Пароль должен содержать минимум 6 символов")]
+        public string Password { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Подтверждение пароля обязательно")]
+        [Compare(nameof(Password), ErrorMessage = "Пароли не совпадают")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+}
