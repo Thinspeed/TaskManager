@@ -1,6 +1,5 @@
 using TaskManager.UI.Infrastructure.Cards.Contracts;
 using TaskManager.UI.Infrastructure.Shared;
-using TaskManager.UI.Models.Cards;
 
 namespace TaskManager.UI.Infrastructure.Cards;
 

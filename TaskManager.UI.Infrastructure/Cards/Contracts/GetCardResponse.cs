@@ -1,6 +1,6 @@
 using TaskManager.UI.Infrastructure.Shared.Contracts;
 
-namespace TaskManager.UI.Models.Cards;
+namespace TaskManager.UI.Infrastructure.Cards.Contracts;
 
 public class GetCardResponse
 {
