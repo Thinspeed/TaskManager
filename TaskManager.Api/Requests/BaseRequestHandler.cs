@@ -16,6 +16,9 @@ public abstract class BaseRequestHandler<TRequest, TBaseType, TResponse> : IRequ
     where TRequest : IRequest<TResponse> 
     where TResponse : PagedList<TBaseType>
 {
+    private const int DefaultPage = 1;
+    private const int DefaultPageSize = 20;
+    
     protected readonly DbContext DbContext;
     
     private readonly SieveProcessor _sieveProcessor;
@@ -34,6 +37,8 @@ public abstract class BaseRequestHandler<TRequest, TBaseType, TResponse> : IRequ
         Expression<Func<T, TBaseType>> selector,
         CancellationToken cancellationToken)
     {
+        ValidateAndSetSieveModel(sieveModel);
+        
         int totalCount = await query.CountAsync(cancellationToken);
         
         IQueryable<T> sieveQuery = _sieveProcessor!.Apply(sieveModel, query);
@@ -47,5 +52,11 @@ public abstract class BaseRequestHandler<TRequest, TBaseType, TResponse> : IRequ
             TotalPages = (int)Math.Ceiling((double)totalCount / sieveModel.PageSize!.Value),
             Data = await resultQuery.ToListAsync(cancellationToken)
         };
+    }
+    
+    private void ValidateAndSetSieveModel(SieveModel sieveModel)
+    {
+        sieveModel.PageSize ??= DefaultPageSize;
+        sieveModel.Page ??= DefaultPage;
     }
 }
