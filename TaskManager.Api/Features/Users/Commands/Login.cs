@@ -2,6 +2,7 @@ using EntityFramework.Persistence;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Api.Exceptions;
 using TaskManager.Api.Requests;
 using TaskManager.Domain;
 using TaskManager.Infrastructure.JwtProvider;
@@ -25,12 +26,12 @@ public class LoginCommandHandler(ApplicationDbContext dbContext, IPasswordHasher
         LoginCommandBody body = request.Body;
         
         User user = await dbContext.Set<User>().FirstOrDefaultAsync(x => x.Login == body.Login, cancellationToken)
-            ?? throw new Exception($"Неверный логин или пароль");
+            ?? throw new BadRequestException("Неверный логин или пароль");
 
         //todo обрабатывать PasswordVerificationResult.SuccessRehashNeeded?
         if (hasher.VerifyHashedPassword(null!, user.PasswordHash, body.Password) == PasswordVerificationResult.Failed)
         {
-            throw new Exception($"Неверный логин или пароль");
+            throw new BadRequestException("Неверный логин или пароль");
         }
 
         string token = jwtProvider.GenerateToken(user);

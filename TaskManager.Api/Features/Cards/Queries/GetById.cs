@@ -2,6 +2,7 @@ using EFSelector;
 using EntityFramework.Persistence;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Api.Exceptions;
 using TaskManager.Api.Models;
 using TaskManager.Api.Requests;
 using TaskManager.Domain;
@@ -23,7 +24,7 @@ public class GetCardByIdQueryHandler(ApplicationDbContext dbContext)
         GetCardByIdQueryResponse entity = await dbContext.Set<Card>()
             .Select(Selector.Expression)
             .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken)
-            ?? throw new Exception("Задача не найдена");
+            ?? throw new NotFoundException("Задача не найдена");
 
         return entity;
     }

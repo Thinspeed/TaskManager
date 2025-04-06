@@ -13,8 +13,6 @@ namespace TaskManager.Api.AppDefinitions;
 [UsedImplicitly]
 public class AuthDefinition : IAppDefinition
 {
-    public Type[] DependsOn => [typeof(CorsDefinition)];
-
     public void RegisterDefinition(IHostApplicationBuilder builder)
     {
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
@@ -55,16 +53,5 @@ public class AuthDefinition : IAppDefinition
             });
 
         builder.Services.AddAuthorization();
-    }
-
-    public void Init(IHost app)
-    {
-        if (app is not IApplicationBuilder appBuilder)
-        {
-            throw new Exception($"App doest not implement {nameof(IApplicationBuilder)}");
-        }
-        
-        appBuilder.UseAuthentication();
-        appBuilder.UseAuthorization();
     }
 }

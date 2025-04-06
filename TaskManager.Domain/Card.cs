@@ -1,5 +1,6 @@
 using Generator.Attributes;
 using TaskManager.Domain.Abstractions;
+using TaskManager.Domain.Exceptions;
 
 namespace TaskManager.Domain;
 
@@ -40,7 +41,7 @@ public partial class Card : Entity
     {
         if (_status != Status.Created)
         {
-            throw new Exception("Задача уже начата или завершена");
+            throw new DomainException("Задача уже начата или завершена");
         }
         
         _status = Status.Processing;
@@ -50,7 +51,7 @@ public partial class Card : Entity
     {
         if (_status == Status.Completed)
         {
-            throw new Exception("Задача уже завершена");
+            throw new DomainException("Задача уже завершена");
         }
         
         _status = Status.Completed;

@@ -21,14 +21,4 @@ public class CorsDefinition : IAppDefinition
                 .AllowCredentials();
         }));
     }
-
-    public void Init(IHost app)
-    {
-        if (app is not IApplicationBuilder appBuilder)
-        {
-            throw new Exception("App definitions must implement IApplicationBuilder interface to add Cors middleware.");
-        }
-        
-        appBuilder.UseCors(CorsDefinition.CorsPolicyName);
-    }
 }

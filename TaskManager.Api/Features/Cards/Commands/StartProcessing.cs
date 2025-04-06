@@ -2,6 +2,7 @@ using EntityFramework.Persistence;
 using JetBrains.Annotations;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Api.Exceptions;
 using TaskManager.Api.Requests;
 using TaskManager.Domain;
 
@@ -23,11 +24,11 @@ public class StartProcessingCardCommandBodyHandler(ApplicationDbContext dbContex
     public override async Task<Unit> Handle(StartProcessingCardCommand request, CancellationToken cancellationToken)
     {
         Card card = await dbContext.Set<Card>().FirstOrDefaultAsync(x => x.Id == request.Body.CardId, cancellationToken)
-            ?? throw new Exception("Задача не найдена");
+            ?? throw new NotFoundException("Задача не найдена");
 
         if (card.UserId != request.UserId)
         {
-            throw new Exception($"Пользователь не является владельцем задачи");
+            throw new AuthException("Отказано в доступе", "Пользователь не является владельцем задачи");
         }
         
         card.StartProcessing();

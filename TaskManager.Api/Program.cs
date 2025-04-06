@@ -4,14 +4,14 @@ using TaskManager.Api.AppDefinitions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(8080);
-    options.ListenAnyIP(8081, listenOptions =>
-    {
-        listenOptions.UseHttps("/https/cert.pfx", "Password");
-    });
-});
+// builder.WebHost.ConfigureKestrel(options =>
+// {
+//     options.ListenAnyIP(8080);
+//     options.ListenAnyIP(8081, listenOptions =>
+//     {
+//         listenOptions.UseHttps("/https/cert.pfx", "Password");
+//     });
+// });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -29,12 +29,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
+
+app.UseCors(CorsDefinition.CorsPolicyName);
 app.UseCookiePolicy(new CookiePolicyOptions()
 {
     MinimumSameSitePolicy = SameSiteMode.None,
     Secure = CookieSecurePolicy.Always,
     HttpOnly = HttpOnlyPolicy.Always
 });
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 

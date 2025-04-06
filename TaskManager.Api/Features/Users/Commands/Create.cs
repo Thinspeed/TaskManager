@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Api.Exceptions;
 using TaskManager.Api.Requests;
 using TaskManager.Domain;
 
@@ -27,7 +28,7 @@ public class CreateUserCommandHandler(ApplicationDbContext dbContext, IPasswordH
 
         if (await dbContext.Set<User>().AnyAsync(x => x.Login == body.Login, cancellationToken))
         {
-            throw new Exception($"Пользователь с логином {body.Login} уже существует.");
+            throw new NotFoundException($"Пользователь не найден");
         }
         
         string passwordHash = hasher.HashPassword(null!, body.Password);
