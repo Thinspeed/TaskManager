@@ -1,3 +1,24 @@
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 0 10px;
+}
+
+.back-button{
+    display: inline-flex;
+    margin-right: auto;
+}
+
 .card-details {
     margin-left: 5vw;
+}
+
+.comments-wrapper {
+    max-width: 1000px;
+}
+
+.comment-content {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }

@@ -1,20 +1,25 @@
 @page "/card/{id:int}"
 
+@using System.ComponentModel.DataAnnotations
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
 @using TaskManager.UI.Infrastructure.Cards
+@using TaskManager.UI.Infrastructure.Comments
+@using TaskManager.UI.Infrastructure.Comments.Contracts
+@using TaskManager.UI.Infrastructure.Shared
 @using TaskManager.UI.Models.Cards
-@using TaskManager.UI.Services
 @using TaskManager.UI.Services.Auth
+@using TaskManager.UI.Services.Validation
 
 @attribute [Authorize]
 
 @inject ICardService CardService
+@inject ICommentService CommentService
 @inject NavigationManager NavigationManager
 @inject CustomAuthStateProvider AuthStateProvider
 
 <div class="content-wrapper">
-    <button class="btn btn-outline-secondary mb-3" @onclick="GoBack">
+    <button class="btn btn-outline-secondary mb-3 back-button" @onclick="GoBack">
         ← Назад
     </button>
     
@@ -52,6 +57,35 @@
     {
         <p>Loading...</p>
     }
+
+    <div class="mt-5 comments-wrapper">
+        
+        <h5>Комментарии</h5>
+
+        <EditForm Model="CreateCommentRequest" OnValidSubmit="SubmitComment">
+            <DataAnnotationsValidator />
+            <InputTextArea @bind-Value="CreateCommentRequest.Content" class="form-control mb-2" placeholder="Оставьте комментарий..."/>
+            <button type="submit" class="btn btn-outline-primary">Отправить</button>
+        </EditForm>
+
+        <div class="mt-4">
+            @if (_comments is not null && _comments.Data.Any())
+            {
+                @foreach (var comment in _comments.Data)
+                {
+                    <div class="border rounded p-2 mb-2">
+                        <div class="fw-bold">@comment.User?.Name</div>
+                        <div class="comment-content">@comment.Content</div>
+                        <small class="text-muted">@comment.CreationDate.ToLocalTime().ToString("g")</small>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted">Комментариев пока нет.</p>
+            }
+        </div>
+    </div>
     
 </div>
 
@@ -59,11 +93,12 @@
 @code {
     [Parameter] public int Id { get; set; }
     
-    private bool CanStart => _card?.Status == 0 && _card?.User?.Id == _currentUserId;
-    private bool CanComplete => _card?.Status == 1 && _card?.User?.Id == _currentUserId;
-    
     private GetCardResponse? _card;
     private int _currentUserId = -1;
+
+    [SupplyParameterFromForm] 
+    private CreateCommentModel CreateCommentRequest { get; set; } = new();
+    private PagedList<GetCommentResponse>? _comments;
     
     protected override async Task OnInitializedAsync()
     {
@@ -73,7 +108,19 @@
         int.TryParse(user.FindFirst(ClaimTypes.NameIdentifier)?.Value, out _currentUserId);
         
         _card = await CardService.GetByIdAsync(Id);
+        
+        await LoadComments();
     }
+    
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+    #region Card
+
+    private bool CanStart => _card?.Status == 0 && _card?.User?.Id == _currentUserId;
+    private bool CanComplete => _card?.Status == 1 && _card?.User?.Id == _currentUserId;
     
     private async Task StartCard()
     {
@@ -104,9 +151,36 @@
         2 => "text-success",
         _ => "text-muted"
     };
-    
-    private void GoBack()
+
+    #endregion
+
+    #region Comments
+
+    private async Task LoadComments()
     {
-        NavigationManager.NavigateTo("/");
+        _comments = await CommentService.GetAsync("-CreationDate", $"Card.Id=={Id}", 1, 100);
     }
+
+    private async Task SubmitComment()
+    {
+        await CommentService.CreateAsync(new CreateCommentRequest()
+        {
+            CardId = Id,
+            Content = CreateCommentRequest.Content
+        });
+        
+        CreateCommentRequest.Content = string.Empty;
+        
+        await LoadComments();
+        StateHasChanged();
+    }
+
+    private class CreateCommentModel
+    {
+        [Required]
+        [NotWhiteSpace]
+        public string Content { get; set; } = string.Empty;
+    }
+    #endregion
+    
 }
