@@ -12,32 +12,35 @@ public static class HostApplicationBuilderExtensions
     {
         var assembly = Assembly.GetCallingAssembly();
         
-        IEnumerable<IAppDefinition> appDefinitions = assembly.GetTypes()
-            .Where(t => !t.IsAbstract && typeof(IAppDefinition).IsAssignableFrom(t))
-            .Select(t => Activator.CreateInstance(t) as IAppDefinition)!;
+        IEnumerable<Type> appDefinitions = assembly.GetTypes()
+            .Where(t => !t.IsAbstract && typeof(IAppDefinition).IsAssignableFrom(t));
         
-        HashSet<IAppDefinition> handledDefinitions = [];
+        var appDefinitionProvider = new AppDefinitionProvider();
 
         foreach (var definition in appDefinitions)
         {
-            builder.AddDefinition(definition, handledDefinitions);
+            builder.AddDefinition(definition, appDefinitionProvider);
         }
-
-        var appDefinitionProvider = new AppDefinitionProvider(handledDefinitions);
+        
         builder.Services.AddSingleton<IAppDefinitionProvider>(appDefinitionProvider);
     }
 
-    private static void AddDefinition(this IHostApplicationBuilder builder, IAppDefinition definition, HashSet<IAppDefinition> handledDefinitions)
+    private static void AddDefinition(this IHostApplicationBuilder builder, Type definition, AppDefinitionProvider handledDefinitions)
     {
-        foreach (var dependency in definition.DependsOn)
+        if (handledDefinitions.Contains(definition))
         {
-            if (!handledDefinitions.Contains(dependency))
-            {
-                AddDefinition(builder, dependency, handledDefinitions);
-            }
+            return;
+        }
+        
+        IAppDefinition instance = Activator.CreateInstance(definition) as IAppDefinition
+            ?? throw new Exception($"Failed to create definition of type {definition.FullName}");
+        
+        foreach (var dependency in instance.DependsOn)
+        {
+            AddDefinition(builder, dependency, handledDefinitions);
         }
             
-        definition.RegisterDefinition(builder);
-        handledDefinitions.Add(definition);
+        instance.RegisterDefinition(builder);
+        handledDefinitions.Add(instance);
     }
 }

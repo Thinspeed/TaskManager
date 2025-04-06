@@ -13,6 +13,8 @@ namespace TaskManager.Api.AppDefinitions;
 [UsedImplicitly]
 public class AuthDefinition : IAppDefinition
 {
+    public Type[] DependsOn => [typeof(CorsDefinition)];
+
     public void RegisterDefinition(IHostApplicationBuilder builder)
     {
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();

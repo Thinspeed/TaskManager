@@ -5,7 +5,7 @@ namespace AppDefinition.Abstractions;
 
 public interface IAppDefinition
 {
-    public IAppDefinition[] DependsOn => [];
+    public Type[] DependsOn => [];
     
     void RegisterDefinition(IHostApplicationBuilder builder);
 
