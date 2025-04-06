@@ -9,5 +9,8 @@ public class CommentSieveConfiguration : ISieveConfiguration
     {
         mapper.Property<Comment>(x => x.Card.Id)
             .CanFilter();
+        
+        mapper.Property<Comment>(x => x.CreationDate)
+            .CanSort();
     }
 }

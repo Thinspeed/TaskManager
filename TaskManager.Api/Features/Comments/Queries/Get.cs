@@ -38,11 +38,14 @@ public class GetCommentResponse
     
     public string Content { get; set; }
     
+    public DateTime CreationDate { get; set; }
+
     public UserModel User { get; set; }
 
     public static readonly EfSelector<Comment, GetCommentResponse> Selector =
         EfSelector.Declare<Comment, GetCommentResponse>()
             .Select(src => src.Id, dst => dst.Id)
             .Select(src => src.Content, dst => dst.Content)
+            .Select(src => src.CreationDate, dst => dst.CreationDate)
             .Select(src => src.User, dst => dst.User, UserModel.Selector);
 }
