@@ -1,8 +1,8 @@
-using TaskManager.UI.Infrastructure.Auth;
 using TaskManager.UI.Infrastructure.Shared.Contracts;
 using TaskManager.UI.Infrastructure.User;
+using TaskManager.UI.Services.Common;
 
-namespace TaskManager.UI.Services;
+namespace TaskManager.UI.Services.Users;
 
 public class UserService : IUserService
 {

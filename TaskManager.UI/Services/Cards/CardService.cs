@@ -3,8 +3,9 @@ using TaskManager.UI.Infrastructure.Cards;
 using TaskManager.UI.Infrastructure.Cards.Contracts;
 using TaskManager.UI.Infrastructure.Shared;
 using TaskManager.UI.Models.Cards;
+using TaskManager.UI.Services.Common;
 
-namespace TaskManager.UI.Services;
+namespace TaskManager.UI.Services.Cards;
 
 public class CardService : ICardService
 {

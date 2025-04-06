@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using TaskManager.UI.Infrastructure.Shared.Contracts;
 using TaskManager.UI.Infrastructure.User;
 
-namespace TaskManager.UI.Services;
+namespace TaskManager.UI.Services.Auth;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {

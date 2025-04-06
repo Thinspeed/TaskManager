@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TaskManager.UI.Infrastructure.Shared;
+namespace TaskManager.UI.Services.Validation;
 
 public class FutureDateAttribute : ValidationAttribute
 {

@@ -2,7 +2,7 @@ using TaskManager.UI.Infrastructure.Auth;
 using TaskManager.UI.Infrastructure.Shared.Contracts;
 using TaskManager.UI.Infrastructure.User;
 
-namespace TaskManager.UI.Services;
+namespace TaskManager.UI.Services.Auth;
 
 public class AuthService : IAuthService
 {
