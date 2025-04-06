@@ -1,0 +1,29 @@
+.date-range-filter {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.date-range-filter-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.date-range-filter-fields {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-range-filter-fields label {
+    white-space: nowrap;
+    font-size: 0.85rem;
+}
+
+.date-range-filter-fields input {
+    min-width: 140px;
+    font-size: 0.85rem;
+}

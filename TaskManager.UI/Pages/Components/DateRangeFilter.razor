@@ -1,0 +1,58 @@
+@using TaskManager.UI.Sieve
+
+<div class="date-range-filter">
+    <div class="date-range-filter-title">@Title</div>
+    <div class="date-range-filter-fields">
+        <label for="startDate">С:</label>
+        <InputDate id="startDate" @bind-Value="StartDate" class="default-input"/>
+
+        <label for="endDate">По:</label>
+        <InputDate id="endDate" @bind-Value="EndDate" class="default-input"/>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string FieldName { get; set; }
+    [Parameter] public string Title { get; set; }
+    [Parameter] public EventCallback<FilterTerm> OnDateChanged { get; set; }
+
+    private DateTime? _startDate;
+    private DateTime? _endDate;
+
+    public DateTime? StartDate
+    {
+        get => _startDate;
+
+        set
+        {
+            _startDate = value is null
+                ? value
+                : value.Value.Date.Date.AddMilliseconds(-1);
+            
+            OnDateChanged.InvokeAsync(new FilterTerm()
+            {
+                Field = FieldName,
+                Operation = FilterOperation.More,
+                Value = _startDate
+            });
+        }
+    }
+
+    public DateTime? EndDate
+    {
+        get => _endDate;
+        set
+        {
+            _endDate = value is null
+                ? value
+                : value.Value.Date.Date.AddDays(1).AddMilliseconds(-1);
+            
+            OnDateChanged.InvokeAsync(new FilterTerm()
+            {
+                Field = FieldName,
+                Operation = FilterOperation.Less,
+                Value = _endDate
+            });
+        }
+    }
+}

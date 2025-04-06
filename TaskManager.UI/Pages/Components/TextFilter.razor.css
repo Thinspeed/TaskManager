@@ -1,0 +1,16 @@
+.text-filter {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.text-filter label {
+    font-weight: 600;
+}
+
+.filter-input {
+    max-width: 140px !important;
+    font-size: 0.85rem;
+}

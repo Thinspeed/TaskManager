@@ -1,0 +1,35 @@
+@using TaskManager.UI.Sieve
+
+<div class="text-filter">
+    <label for="filterInput">@Title</label>
+    <InputText id="filterInput"
+               class="default-input filter-input"
+               @bind-Value="Value"/>
+</div>
+
+@code {
+    [Parameter] public string FieldName { get; set; }
+    [Parameter] public string Title { get; set; }
+    [Parameter] public EventCallback<FilterTerm> OnDateChanged { get; set; }
+
+    private string? _value;
+
+    public string? Value
+    {
+        get => _value;
+
+        set
+        {
+            _value = string.IsNullOrWhiteSpace(value) 
+                ? null 
+                : value;
+            
+            OnDateChanged.InvokeAsync(new FilterTerm()
+            {
+                Field = FieldName,
+                Operation = FilterOperation.Contains,
+                Value = _value
+            });
+        }
+    }
+}

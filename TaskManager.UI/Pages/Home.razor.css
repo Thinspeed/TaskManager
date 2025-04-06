@@ -24,6 +24,35 @@
     margin: 20px;
 }
 
+.filter-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.filter-section {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.filter-section label {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.filter-section select {
+    max-width: 140px !important;
+    font-size: 0.85rem;
+}
+
+.filter-select-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
 .status-created {
     color: #6c757d;
     font-weight: 600;

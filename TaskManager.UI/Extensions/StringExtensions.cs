@@ -26,7 +26,7 @@ public static class StringExtensions
     {
         var queryParams = new Dictionary<string, string>
         {
-            {FiltersParameterName, filters },
+            { FiltersParameterName, filters },
             { SortsParameterName, sorts },
             { PageParameterName, page.ToString() },
             { PageSizeParameterName, pageSize.ToString() }

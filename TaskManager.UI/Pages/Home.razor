@@ -8,6 +8,7 @@
 @using TaskManager.UI.Models.Cards
 @using TaskManager.UI.Pages.Components
 @using TaskManager.UI.Services.Validation
+@using TaskManager.UI.Sieve
 
 @attribute [Authorize]
 
@@ -20,6 +21,41 @@
         <span class="create-button-icon"></span>
     </button>
     <div class="table-wrapper">
+        <div class="filter-wrapper">
+            
+            <div class="filter-section">
+                <label for="statusFilterSelect">Статус:</label>
+                <select id="statusFilterSelect"
+                        class="default-input"
+                        @onchange="@(async e => await SetFilter(new FilterTerm() { Field = "Status", Operation = FilterOperation.Equal, Value = e.Value }))">
+                    <option value="">Все</option>
+                    <option value="0">Создана</option>
+                    <option value="1">В процессе</option>
+                    <option value="2">Завершена</option>
+                </select>
+            </div>
+            
+            <TextFilter
+                Title="Создатель"
+                FieldName="User.Name"
+                OnDateChanged="SetFilter"/>
+
+            <DateRangeFilter
+                Title="Дата создания"
+                FieldName="CreationDate"
+                OnDateChanged="SetFilter"/>
+
+            <DateRangeFilter
+                Title="Предполагаемая дата завершения"
+                FieldName="EstimatedCompletionDate"
+                OnDateChanged="SetFilter"/>
+
+            <DateRangeFilter
+                Title="Дата завершения"
+                FieldName="ClosingDate"
+                OnDateChanged="SetFilter"/>
+        </div>
+        
         @if (_cards is not null)
         {
             <table class="table">
@@ -29,39 +65,39 @@
                     <SortableHeader Field="Id" Title="Номер"
                                     SortOrder=@(HasSort("Id") ? GetSortDirection("Id") : null)
                                     SortIndex=@GetSortIndex("Id")
-                                    OnToggle="ToggleSort" />
-                    
+                                    OnToggle="ToggleSort"/>
+
                     <SortableHeader Field="Name" Title="Название"
                                     SortOrder="@(HasSort("Name") ? GetSortDirection("Name") : null)"
                                     SortIndex=@GetSortIndex("Name")
-                                    OnToggle="ToggleSort" />
-                    
+                                    OnToggle="ToggleSort"/>
+
                     <SortableHeader Field="Status" Title="Статус"
                                     SortOrder="@(HasSort("Status") ? GetSortDirection("Status") : null)"
                                     SortIndex=@GetSortIndex("Status")
-                                    OnToggle="ToggleSort" />
+                                    OnToggle="ToggleSort"/>
 
                     <SortableHeader Field="CreationDate" Title="Дата создания"
                                     SortOrder="@(HasSort("CreationDate") ? GetSortDirection("CreationDate") : null)"
                                     SortIndex=@GetSortIndex("CreationDate")
-                                    OnToggle="ToggleSort" />
-                    
+                                    OnToggle="ToggleSort"/>
+
                     <SortableHeader Field="EstimatedCompletionDate" Title="Предполагаемая дата"
                                     SortOrder="@(HasSort("EstimatedCompletionDate") ? GetSortDirection("EstimatedCompletionDate") : null)"
                                     SortIndex=@GetSortIndex("EstimatedCompletionDate")
-                                    OnToggle="ToggleSort" />
-                    
+                                    OnToggle="ToggleSort"/>
+
                     <SortableHeader Field="ClosingDate" Title="Дата завершения"
                                     SortOrder="@(HasSort("ClosingDate") ? GetSortDirection("ClosingDate") : null)"
                                     SortIndex=@GetSortIndex("ClosingDate")
-                                    OnToggle="ToggleSort" />
+                                    OnToggle="ToggleSort"/>
 
                     <SortableHeader Field="User.Name" Title="Создатель"
                                     SortOrder="@(HasSort("User.Name") ? GetSortDirection("User.Name") : null)"
                                     SortIndex=@GetSortIndex("User.Name")
-                                    OnToggle="ToggleSort" />
-                    
-                    
+                                    OnToggle="ToggleSort"/>
+
+
                 </tr>
                 </thead>
                 <tbody>
@@ -128,24 +164,32 @@
 </Modal>
 
 @code {
-    private PagedList<GetCardResponse>? _cards;
-    
-    private int _currentPage = 1;
-    private int _pageSize = 10;
-
-    private List<(string Field, string Direction)> _sorts = new();
-    
-    [SupplyParameterFromForm]
-    private CreateCardModel CreateCardRequest { get; set; } = new() { EstimatedCompletionDate = DateTime.UtcNow };
-    private Modal? _modalRef;
-    
     protected override async Task OnInitializedAsync()
     {
         await LoadCardsDataAsync();
     }
 
+    #region Filtering
+
+    private readonly List<FilterTerm> _filters = new ();
+    
+    private async Task SetFilter(FilterTerm filterTerm)
+    {
+        _filters.RemoveAll(x => x.GetKey() == filterTerm.GetKey());
+        if (filterTerm.Value is not null)
+        {
+            _filters.Add(filterTerm);
+        }
+
+        await LoadCardsDataAsync();
+    }
+    
+    #endregion
+    
     #region Sorting
 
+    private List<(string Field, string Direction)> _sorts = new();
+    
     private async Task ToggleSort(string fieldName)
     {
         var index = _sorts.FindIndex(s => s.Field == fieldName);
@@ -180,6 +224,9 @@
     
     #region Pagination
     
+    private int _currentPage = 1;
+    private int _pageSize = 10;
+    
     private async Task OnPageSizeChanged(ChangeEventArgs e)
     {
         _cards = null;
@@ -211,6 +258,10 @@
 
     #region CreateForm
 
+    [SupplyParameterFromForm]
+    private CreateCardModel CreateCardRequest { get; set; } = new() { EstimatedCompletionDate = DateTime.UtcNow };
+    private Modal? _modalRef;
+    
     private void ShowModal()
     {
         _modalRef?.Show();
@@ -225,6 +276,7 @@
             EstimatedCompletionDate = CreateCardRequest.EstimatedCompletionDate
         });
         
+        CloseModal();
         await LoadCardsDataAsync();
     }
     
@@ -249,11 +301,14 @@
 
     #region Table
 
+    private PagedList<GetCardResponse>? _cards;
+    
     private async Task LoadCardsDataAsync()
     {
         string sortString = string.Join(",", _sorts.Select(s => s.Direction == "desc" ? $"-{s.Field}" : s.Field));
+        string filteringString = string.Join(",", _filters);
         
-        _cards = await CardService.GetAsync(sortString, string.Empty, _currentPage, _pageSize);
+        _cards = await CardService.GetAsync(sortString, filteringString, _currentPage, _pageSize);
         StateHasChanged();
     }
     
