@@ -68,6 +68,12 @@
 
         if (result)
         {
+            await AuthService.LoginAsync(new LoginRequest
+            {
+                Login = RegisterRequest.Login,
+                Password = RegisterRequest.Password
+            });
+            
             NavigationManager.NavigateTo(_returnUrl, true);
         }
         else
