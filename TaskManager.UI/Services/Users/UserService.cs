@@ -1,3 +1,5 @@
+using Blazored.Toast.Services;
+using TaskManager.UI.Extensions;
 using TaskManager.UI.Infrastructure.Shared.Contracts;
 using TaskManager.UI.Infrastructure.User;
 using TaskManager.UI.Services.Common;
@@ -7,15 +9,18 @@ namespace TaskManager.UI.Services.Users;
 public class UserService : IUserService
 {
     private readonly AuthorizedHttpClient _client;
+    private readonly IToastService _toastService;
     
-    public UserService(AuthorizedHttpClient client)
+    public UserService(AuthorizedHttpClient client, IToastService toastService )
     {
         _client = client;
+        _toastService = toastService;
     }
     
     public async Task<int> Register(RegisterRequest request)
     {
         HttpResponseMessage response = await _client.PostJsonAsync("/register", request);
+        await response.HandleErrors(_toastService);
 
         return !response.IsSuccessStatusCode ? -1 : int.Parse(await response.Content.ReadAsStringAsync());
     }
@@ -23,6 +28,7 @@ public class UserService : IUserService
     public async Task<bool> Login(LoginRequest request)
     {
         HttpResponseMessage response = await _client.PostJsonAsync("/login", request);
+        await response.HandleErrors(_toastService);
         
         return response.IsSuccessStatusCode;
     }
@@ -30,6 +36,7 @@ public class UserService : IUserService
     public async Task<bool> Logout()
     {
         HttpResponseMessage response = await _client.PostJsonAsync("/logout", new { });
+        await response.HandleErrors(_toastService);
         
         return response.IsSuccessStatusCode;
     }

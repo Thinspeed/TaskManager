@@ -1,7 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
 @using System.Security.Claims
-@using TaskManager.UI.Infrastructure.Auth
+@using Blazored.Toast.Configuration
+@using Blazored.Toast
 
 @inject NavigationManager NavigationManager
 @inject CustomAuthStateProvider AuthStateProvider
@@ -25,6 +26,11 @@
         </article>
     </main>
 </div>
+
+<BlazoredToasts Position="ToastPosition.TopRight"
+               Timeout="5"
+               ShowProgressBar="true"
+               ShowCloseButton="true"/>
 
 @code {
     private string? _currentUserName;
