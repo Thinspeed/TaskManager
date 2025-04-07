@@ -40,6 +40,11 @@ main {
     position: relative;
 }
 
+.user-name {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 .logout-button {
     position: absolute;
     top: 110%;

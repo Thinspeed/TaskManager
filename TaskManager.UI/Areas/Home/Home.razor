@@ -245,11 +245,15 @@
     #region CreateForm
 
     [SupplyParameterFromForm]
-    private CreateCardModel CreateCardRequest { get; set; } = new() { EstimatedCompletionDate = DateTime.UtcNow };
+    private CreateCardModel CreateCardRequest { get; set; } = new();
     private Modal? _modalRef;
     
     private void ShowModal()
     {
+        CreateCardRequest.Name = string.Empty;
+        CreateCardRequest.Description = string.Empty;
+        CreateCardRequest.EstimatedCompletionDate = DateTime.Now;
+        
         _modalRef?.Show();
     }
     

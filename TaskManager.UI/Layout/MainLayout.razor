@@ -12,7 +12,7 @@
     <main>
         <div class="top-row px-4 class" @onclick="ToggleUserMenu">
             <div class="user-info">
-                @(_currentUserName ?? string.Empty)
+                <span class="user-name">@(_currentUserName ?? string.Empty)</span>
 
                 @if (_showLogout)
                 {
