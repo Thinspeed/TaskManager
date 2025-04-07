@@ -9,12 +9,14 @@ using TaskManager.Domain;
 namespace TaskManager.Api.Features.Cards;
 
 [UsedImplicitly]
-public record StartProcessingCardCommandBody(int CardId) : PutCommandBody;
+public record StartProcessingCardCommandBody : PutCommandBody;
 
 [UsedImplicitly]
 public class StartProcessingCardCommand : PutCommandWithId<int, StartProcessingCardCommandBody, Unit>
 {
     public int UserId { get; init; }
+    
+    public int CardId { get; init; }
 }
 
 [UsedImplicitly]
@@ -23,7 +25,7 @@ public class StartProcessingCardCommandBodyHandler(ApplicationDbContext dbContex
 {
     public override async Task<Unit> Handle(StartProcessingCardCommand request, CancellationToken cancellationToken)
     {
-        Card card = await dbContext.Set<Card>().FirstOrDefaultAsync(x => x.Id == request.Body.CardId, cancellationToken)
+        Card card = await dbContext.Set<Card>().FirstOrDefaultAsync(x => x.Id == request.CardId, cancellationToken)
             ?? throw new NotFoundException("Задача не найдена");
 
         if (card.UserId != request.UserId)

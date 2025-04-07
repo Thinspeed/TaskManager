@@ -27,13 +27,13 @@ public class CardsEndpointProvider : IEndpointProvider
             .RequireAuthorization();
 
         builder.MapPut(
-                "/card/start",
-                async ([FromServices] IMediator mediator, [FromBody] StartProcessingCardCommandBody requestBody,
+                "/card/{Id}/start",
+                async ([FromServices] IMediator mediator, [FromRoute] int id,
                     ClaimsPrincipal user) =>
                 {
                     var request = new StartProcessingCardCommand()
                     {
-                        Body = requestBody,
+                        CardId = id,
                         UserId = user.GetUserId()
                     };
                     
@@ -42,13 +42,13 @@ public class CardsEndpointProvider : IEndpointProvider
             .RequireAuthorization();
 
         builder.MapPut(
-                "/card/complete",
-                async ([FromServices] IMediator mediator, [FromBody] CompleteCardCommandBody requestBody,
+                "/card/{Id}/complete",
+                async ([FromServices] IMediator mediator, [FromRoute] int id,
                     ClaimsPrincipal user) =>
                 {
                     var request = new CompleteCardCommand()
                     {
-                        Body = requestBody,
+                        CardId = id,
                         UserId = user.GetUserId()
                     };
 

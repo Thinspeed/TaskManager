@@ -29,7 +29,7 @@ public class CardService : ICardService
 
     public async Task<bool> StartAsync(int id)
     {
-        HttpResponseMessage response = await _client.PutJsonAsync("/card/start", new { CardId = id });
+        HttpResponseMessage response = await _client.PutJsonAsync($"/card/{id}/start", new { });
         await response.HandleErrors(_toastService);
 
         return response.IsSuccessStatusCode;
@@ -37,7 +37,7 @@ public class CardService : ICardService
 
     public async Task<bool> CompleteAsync(int id)
     {
-        HttpResponseMessage response = await _client.PutJsonAsync("/card/complete", new { CardId = id });
+        HttpResponseMessage response = await _client.PutJsonAsync($"/card/{id}/complete", new { });
         await response.HandleErrors(_toastService);
 
         return response.IsSuccessStatusCode;
