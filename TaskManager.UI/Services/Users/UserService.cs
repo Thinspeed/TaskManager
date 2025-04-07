@@ -19,7 +19,7 @@ public class UserService : IUserService
     
     public async Task<int> Register(RegisterRequest request)
     {
-        HttpResponseMessage response = await _client.PostJsonAsync("/register", request);
+        HttpResponseMessage response = await _client.PostJsonAsync("register", request);
         await response.HandleErrors(_toastService);
 
         return !response.IsSuccessStatusCode ? -1 : int.Parse(await response.Content.ReadAsStringAsync());
@@ -27,7 +27,7 @@ public class UserService : IUserService
 
     public async Task<bool> Login(LoginRequest request)
     {
-        HttpResponseMessage response = await _client.PostJsonAsync("/login", request);
+        HttpResponseMessage response = await _client.PostJsonAsync("login", request);
         await response.HandleErrors(_toastService);
         
         return response.IsSuccessStatusCode;
@@ -35,7 +35,7 @@ public class UserService : IUserService
 
     public async Task<bool> Logout()
     {
-        HttpResponseMessage response = await _client.PostJsonAsync("/logout", new { });
+        HttpResponseMessage response = await _client.PostJsonAsync("logout", new { });
         await response.HandleErrors(_toastService);
         
         return response.IsSuccessStatusCode;
@@ -43,14 +43,14 @@ public class UserService : IUserService
 
     public async Task<CurrentUserResponse?> GetCurrentUser()
     {
-        CurrentUserResponse? response = await _client.GetJsonAsync<CurrentUserResponse>("/user/status");
+        CurrentUserResponse? response = await _client.GetJsonAsync<CurrentUserResponse>("user/status");
 
         return response;
     }
 
     public async Task<GetUserResponse?> GetUserById(int id)
     {
-        GetUserResponse? response = await _client.GetJsonAsync<GetUserResponse>($"/user/{id}");
+        GetUserResponse? response = await _client.GetJsonAsync<GetUserResponse>($"user/{id}");
 
         return response;
     }

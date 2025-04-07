@@ -4,18 +4,17 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-COPY certs /https
-
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["TaskManager.Api/TaskManager.Api.csproj", "TaskManager.Api/"]
+COPY ["AppDefinition/AppDefinition.csproj", "AppDefinition/"]
+COPY ["EFSelector/EFSelector.csproj", "EFSelector/"]
 COPY ["EntityFramework.Persistence/EntityFramework.Persistence.csproj", "EntityFramework.Persistence/"]
 COPY ["TaskManager.Domain/TaskManager.Domain.csproj", "TaskManager.Domain/"]
 COPY ["EntityFramework.SourceGenerator/EntityFramework.SourceGenerator.csproj", "EntityFramework.SourceGenerator/"]
+COPY ["Sieve/Sieve.csproj", "Sieve/"]
 COPY ["TaskManager.Infrastructure/TaskManager.Infrastructure.csproj", "TaskManager.Infrastructure/"]
-COPY ["EFSelector/EFSelector.csproj", "EFSelector/"]
-COPY ["AppDefinition/AppDefinition.csproj", "AppDefinition/"]
 RUN dotnet restore "TaskManager.Api/TaskManager.Api.csproj"
 COPY . .
 WORKDIR "/src/TaskManager.Api"

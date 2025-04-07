@@ -34,8 +34,6 @@ try {
     app.UseAuthentication();
     app.UseAuthorization();
 
-    app.UseHttpsRedirection();
-
     app.Run();
 }
 finally

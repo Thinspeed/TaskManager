@@ -20,4 +20,10 @@
       <ProjectReference Include="..\TaskManager.UI.Infrastructure\TaskManager.UI.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
+    </ItemGroup>
+
 </Project>

@@ -26,7 +26,7 @@ public class AuthorizedHttpClient
 
     public async Task<T?> GetJsonAsync<T>(string url)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, url);
+        var request = new HttpRequestMessage(HttpMethod.Get, BuildRequestUri(url));
         AddCredentials(request);
 
         var response = await _httpClient.SendAsync(request);
@@ -45,7 +45,7 @@ public class AuthorizedHttpClient
     public async Task<HttpResponseMessage> PostJsonAsync<T>(string url, T data)
     {
         var json = JsonSerializer.Serialize(data);
-        var request = new HttpRequestMessage(HttpMethod.Post, url)
+        var request = new HttpRequestMessage(HttpMethod.Post, BuildRequestUri(url))
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
@@ -57,7 +57,7 @@ public class AuthorizedHttpClient
     public async Task<HttpResponseMessage> PutJsonAsync<T>(string url, T data)
     {
         var json = JsonSerializer.Serialize(data);
-        var request = new HttpRequestMessage(HttpMethod.Put, url)
+        var request = new HttpRequestMessage(HttpMethod.Put, BuildRequestUri(url))
         {
             Content = new StringContent(json, Encoding.UTF8, "application/json")
         };
@@ -68,9 +68,14 @@ public class AuthorizedHttpClient
 
     public async Task<HttpResponseMessage> DeleteAsync(string url)
     {
-        var request = new HttpRequestMessage(HttpMethod.Delete, url);
+        var request = new HttpRequestMessage(HttpMethod.Delete, BuildRequestUri(url));
         AddCredentials(request);
 
         return await _httpClient.SendAsync(request);
+    }
+    
+    private string BuildRequestUri(string url)
+    {
+        return $"{_httpClient.BaseAddress!.OriginalString}/{url}";
     }
 }

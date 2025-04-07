@@ -12,10 +12,10 @@ public class CardService : ICardService
     private readonly AuthorizedHttpClient _client;
     private readonly IToastService _toastService;
 
-    public CardService(AuthorizedHttpClient client, IToastService _toastService)
+    public CardService(AuthorizedHttpClient client, IToastService toastService)
     {
         _client = client;
-        this._toastService = _toastService;
+        _toastService = toastService;
     }
     
     public async Task<int> CreateAsync(CreateCardRequest request)
@@ -45,7 +45,7 @@ public class CardService : ICardService
 
     public async Task<PagedList<GetCardResponse>?> GetAsync(string sorts, string filters, int page, int pageSize)
     {
-        string uri = "/card".CreateSieveUri(sorts, filters, page, pageSize);
+        string uri = "card".CreateSieveUri(sorts, filters, page, pageSize);
 
         PagedList<GetCardResponse>? response = await _client.GetJsonAsync<PagedList<GetCardResponse>>(uri);
         
@@ -61,7 +61,7 @@ public class CardService : ICardService
     
     public async Task<bool> DeleteAsync(int id)
     {
-        HttpResponseMessage response = await _client.DeleteAsync($"/card/{id}");
+        HttpResponseMessage response = await _client.DeleteAsync($"card/{id}");
         await response.HandleErrors(_toastService);
 
         return response.IsSuccessStatusCode;

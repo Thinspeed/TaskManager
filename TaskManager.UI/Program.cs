@@ -23,7 +23,9 @@ builder.Services.AddScoped(sp =>
 {
     var client = new HttpClient
     {
-        BaseAddress = new Uri("https://localhost:8081/")
+        BaseAddress = builder.HostEnvironment.IsProduction() 
+            ? new Uri($"{builder.HostEnvironment.BaseAddress}api") 
+            : new Uri("http://localhost:5000")
     };
     
     return client;
@@ -39,6 +41,5 @@ builder.Services.AddBlazoredToast();
 
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
-
 
 await builder.Build().RunAsync();

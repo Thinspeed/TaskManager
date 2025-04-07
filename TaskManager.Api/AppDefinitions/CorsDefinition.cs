@@ -13,12 +13,16 @@ public class CorsDefinition : IAppDefinition
         string allowedHosts = builder.Configuration.GetSection("CorsOrigins").Value ?? string.Empty;
         string[] origins = allowedHosts.Split(" ");
         
-        builder.Services.AddCors(options => options.AddPolicy(name: CorsPolicyName, policy =>
+        builder.Services.AddCors(options =>
         {
-            policy.WithOrigins(origins)
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-        }));
+            options.AddPolicy(name: CorsPolicyName, policy =>
+            {
+                policy
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                    .WithOrigins(origins);
+            });
+        });
     }
 }

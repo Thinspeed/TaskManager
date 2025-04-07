@@ -1,0 +1,12 @@
+﻿services:
+  backend:
+    ports:
+      - "8080:8080"
+  
+  frontend:
+    ports:
+      - "4200:4200"
+  
+  postgres:
+    ports:
+      - "5432:5432"
