@@ -18,10 +18,17 @@
 @inject CustomAuthStateProvider AuthStateProvider
 
 <div class="content-wrapper">
-    <button class="btn btn-outline-secondary mb-3 back-button" @onclick="GoBack">
-        ← Назад
-    </button>
+    <div class="card-info-header">
+        <button class="btn btn-outline-secondary mb-3 back-button" @onclick="GoBack">
+            ← Назад
+        </button>
+        @if (_currentUserId == _card?.User.Id)
+        {
+            <button class="btn btn-outline-danger mb-3 delete-button" @onclick="Delete">Удалить</button>
+        }
+    </div>
     
+
     @if (_card is not null)
     {
         <div class="card-details">
@@ -33,17 +40,17 @@
 
             @if (_card.ClosingDate is not null)
             {
-            <p><strong>Дата закрытия:</strong> @_card.ClosingDate.Value.ToLocalTime().ToString("g")</p>
+                <p><strong>Дата закрытия:</strong> @_card.ClosingDate.Value.ToLocalTime().ToString("g")</p>
             }
 
             @if (_card.ActualProcessingTime.HasValue)
             {
-            <p><strong>Фактическое время выполнения:</strong> @TimeSpan.FromTicks(_card.ActualProcessingTime.Value).ToString(@"d\.hh\:mm\:ss")</p>
+                <p><strong>Фактическое время выполнения:</strong> @TimeSpan.FromTicks(_card.ActualProcessingTime.Value).ToString(@"d\.hh\:mm\:ss")</p>
             }
 
             <p><strong>Создатель:</strong> @_card.User?.Name</p>
             @if (CanStart)
-            {   
+            {
                 <button class="btn btn-outline-primary mt-3" @onclick="StartCard">Начать</button>
             }
             @if (CanComplete)
@@ -58,11 +65,11 @@
     }
 
     <div class="mt-5 comments-wrapper">
-        
+
         <h5>Комментарии</h5>
 
         <EditForm Model="CreateCommentRequest" OnValidSubmit="SubmitComment">
-            <DataAnnotationsValidator />
+            <DataAnnotationsValidator/>
             <InputTextArea @bind-Value="CreateCommentRequest.Content" class="form-control mb-2" placeholder="Оставьте комментарий..."/>
             <button type="submit" class="btn btn-outline-primary">Отправить</button>
         </EditForm>
@@ -85,7 +92,7 @@
             }
         </div>
     </div>
-    
+
 </div>
 
 
@@ -151,6 +158,12 @@
         _ => "text-muted"
     };
 
+    private async Task Delete()
+    {
+        await CardService.DeleteAsync(Id);
+        GoBack();
+    }
+    
     #endregion
 
     #region Comments

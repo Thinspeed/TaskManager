@@ -52,4 +52,11 @@ public class CardService : ICardService
         
         return response;
     }
+    
+    public async Task<bool> DeleteAsync(int id)
+    {
+        HttpResponseMessage response = await _client.DeleteAsync($"/card/{id}");
+
+        return response.IsSuccessStatusCode;
+    }
 }

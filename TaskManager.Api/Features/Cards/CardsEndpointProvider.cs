@@ -55,6 +55,21 @@ public class CardsEndpointProvider : IEndpointProvider
                     return Results.Ok(await mediator.Send(request));
                 })
             .RequireAuthorization();
+        
+        builder.MapDelete(
+            "/card/{Id}",
+            async ([FromServices] IMediator mediator, [FromRoute] int id,
+                ClaimsPrincipal user) =>
+            {
+                var request = new DeleteCardCommand()
+                {
+                    Id = id,
+                    UserId = user.GetUserId()
+                };
+
+                return Results.Ok(await mediator.Send(request));
+            })
+            .RequireAuthorization();
 
         builder.MapGet(
                 "/card",

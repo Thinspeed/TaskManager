@@ -10,4 +10,5 @@ public interface ICardService
     Task<bool> CompleteAsync(int id);
     Task<PagedList<GetCardResponse>?> GetAsync(string sorts, string filters, int page, int pageSize);
     Task<GetCardResponse?> GetByIdAsync(int id);
+    Task<bool> DeleteAsync(int id);
 }

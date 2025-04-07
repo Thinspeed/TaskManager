@@ -4,9 +4,17 @@
     padding: 0 10px;
 }
 
+.card-info-header {
+    display: flex;
+    justify-content: space-between;
+}
+
 .back-button{
     display: inline-flex;
-    margin-right: auto;
+}
+
+.delete-button {
+    display: inline-flex;
 }
 
 .card-details {
